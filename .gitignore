@@ -17,6 +17,7 @@
 
 # --- Exclude requested folders/files ---
 diagrams/
+Backend/docs/
 *.zip
 **/zip/
 **/zips/
@@ -44,3 +45,6 @@ diagrams/
 # OS
 Thumbs.db
 .DS_Store
+
+
+
