@@ -1,0 +1,79 @@
+<div class="auth-container">
+  <div class="auth-wrapper">
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <mat-icon>local_shipping</mat-icon>
+      </div>
+      <h1 class="brand-title">SmartShip</h1>
+      <p class="brand-subtitle">Welcome back! Please login to your account</p>
+    </div>
+
+    <mat-card class="auth-card">
+      <mat-card-content>
+        <h2 class="auth-title">Login</h2>
+        
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+          <div class="input-wrapper">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix class="input-icon">email</mat-icon>
+              <input matInput formControlName="email" type="email" placeholder="you@example.com">
+              <mat-error *ngIf="form.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="form.get('email')?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="input-wrapper">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <mat-icon matPrefix class="input-icon">lock</mat-icon>
+              <input matInput formControlName="password" type="password" placeholder="Enter your password">
+              <mat-error *ngIf="form.get('password')?.hasError('required')">
+                Password is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <button 
+            mat-raised-button 
+            type="submit" 
+            class="submit-button"
+            [disabled]="form.invalid">
+            <span>Login</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+
+          <div class="oauth-divider">
+            <span>or</span>
+          </div>
+
+          <button
+            mat-stroked-button
+            type="button"
+            class="oauth-button"
+            (click)="onGoogleLogin()">
+            <mat-icon>account_circle</mat-icon>
+            <span>Continue with Google</span>
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <p class="link-text">
+            <a routerLink="/auth/forgot-password" class="link">Forgot password?</a>
+          </p>
+          <p class="link-text">
+            Don't have an account? 
+            <a routerLink="/auth/signup" class="link">Sign up here</a>
+          </p>
+          <p class="link-text">
+            <a routerLink="/" class="link">Back to Home</a>
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

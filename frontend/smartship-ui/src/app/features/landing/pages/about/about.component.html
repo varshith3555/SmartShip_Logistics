@@ -1,0 +1,132 @@
+<app-landing-navbar></app-landing-navbar>
+
+<div class="about-container">
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="page-title">Your goods, our supports</h1>
+      <p class="hero-subtitle">Delivering excellence through innovation and reliability</p>
+      <button mat-raised-button class="hero-cta" routerLink="/services">
+        <span>Explore Services</span>
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="story-section">
+    <div class="content-wrapper">
+      <div class="story-header">
+        <h2 class="section-title">Our Story</h2>
+        <p class="section-subtitle">Building the future of logistics, one shipment at a time</p>
+      </div>
+      
+      <div class="story-grid">
+        <div class="story-card">
+          <div class="story-icon">
+            <mat-icon>rocket_launch</mat-icon>
+          </div>
+          <h3 class="story-card-title">The Beginning</h3>
+          <p class="story-text">
+            Founded in 2020, SmartShip emerged from a vision to revolutionize logistics by making 
+            shipment management accessible and efficient for businesses of all sizes.
+          </p>
+        </div>
+
+        <div class="story-card">
+          <div class="story-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <h3 class="story-card-title">Today</h3>
+          <p class="story-text">
+            We serve thousands of customers worldwide, delivering millions of packages annually 
+            with cutting-edge technology and a dedicated team focused on excellence.
+          </p>
+        </div>
+
+        <div class="story-card">
+          <div class="story-icon">
+            <mat-icon>lightbulb</mat-icon>
+          </div>
+          <h3 class="story-card-title">Our Approach</h3>
+          <p class="story-text">
+            Every feature we build and partnership we forge is guided by continuous innovation 
+            and our commitment to delivering customer-centric solutions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="values-section">
+    <div class="content-wrapper">
+      <h2 class="section-title text-center">Our Core Values</h2>
+      <p class="section-subtitle text-center">The principles that guide everything we do</p>
+      <div class="values-grid">
+        <mat-card *ngFor="let value of values" class="value-card">
+          <mat-card-content>
+            <div class="value-icon">
+              <mat-icon>{{ value.icon }}</mat-icon>
+            </div>
+            <h3 class="value-title">{{ value.title }}</h3>
+            <p class="value-description">{{ value.description }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission & Vision Section -->
+  <section class="mission-section">
+    <div class="content-wrapper">
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="mission-icon-wrapper">
+            <mat-icon class="mission-icon">flag</mat-icon>
+          </div>
+          <h2 class="mission-title">Our Mission</h2>
+          <p class="mission-text">
+            To empower businesses with intelligent shipping solutions that simplify logistics, 
+            reduce costs, and enhance customer satisfaction through innovation and excellence.
+          </p>
+        </div>
+        <div class="mission-card">
+          <div class="mission-icon-wrapper">
+            <mat-icon class="mission-icon">visibility</mat-icon>
+          </div>
+          <h2 class="mission-title">Our Vision</h2>
+          <p class="mission-text">
+            To become the world's most trusted and innovative logistics platform, setting new 
+            standards for efficiency, reliability, and customer service in the shipping industry.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="content-wrapper">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">Shipments Delivered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">50+</div>
+          <div class="stat-label">Countries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">99.9%</div>
+          <div class="stat-label">On-Time Delivery</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,151 @@
+SMARTSHIP LOGISTICS — INTERVIEW Q&A (50)
+
+1) Q: What is SmartShip Logistics?
+   A: A microservice-based logistics platform with an Angular frontend, an Ocelot API Gateway, and multiple ASP.NET Core services for identity, shipments, tracking, documents, and admin.
+
+2) Q: Why use an API gateway?
+   A: To give the frontend one stable entry point, centralize routing and Swagger aggregation, and control what endpoints are exposed publicly.
+
+3) Q: What does Ocelot do in this system?
+   A: Routes upstream paths like /gateway/shipments/* to downstream services and aggregates Swagger endpoints via SwaggerForOcelot.
+
+4) Q: What identity endpoints are exposed through the gateway?
+   A: /gateway/auth/* for auth plus explicit /gateway/identity/Profile, /Users, /Roles, and /identity/admin/* routes.
+
+5) Q: How do you avoid exposing internal identity auth routes twice?
+   A: By removing broad identity passthrough routes and exposing auth only via /gateway/auth/*.
+
+6) Q: What is the frontend technology stack?
+   A: Angular 17 + Angular Material + RxJS + TypeScript.
+
+7) Q: How does the Angular app reach the backend in development?
+    A: It uses ng serve with proxy.conf.json to proxy /gateway and /uploads to http://localhost:5000 (the gateway).
+
+8) Q: What is the main persistence technology?
+   A: EF Core with SQL Server provider.
+
+9) Q: What is used for asynchronous integration?
+   A: RabbitMQ with a direct exchange named smartship_events.
+
+10) Q: How are events published?
+    A: Via SmartShip.Core.Messaging.IEventBus; RabbitMQService publishes to smartship_events with routingKey = event type name.
+
+11) Q: How are events consumed in TrackingService?
+    A: A BackgroundService (TrackingEventConsumer) binds tracking_queue to multiple routing keys and processes messages by routingKey.
+
+12) Q: Which routing keys are bound for tracking updates?
+    A: ShipmentCreatedEvent, ShipmentBookedEvent, ShipmentDeliveredEvent, TrackingUpdatedEvent.
+
+13) Q: What does the TrackingService do when it receives ShipmentCreatedEvent?
+    A: Upserts the current status to CREATED and adds a history entry.
+
+14) Q: What does it do for TrackingUpdatedEvent?
+    A: Updates the current status and appends a tracking history event using the payload fields.
+
+15) Q: Why use routingKey = event type name?
+    A: It’s a simple convention that keeps producer and consumer aligned without extra mapping tables.
+
+16) Q: What’s the difference between synchronous and asynchronous parts?
+    A: CRUD actions are synchronous HTTP via gateway; cross-service propagation for tracking is asynchronous via RabbitMQ events.
+
+17) Q: How is authorization implemented?
+    A: JWT authentication + [Authorize] attributes and role checks on controller actions.
+
+18) Q: Where are documents handled?
+    A: DocumentService under /api/documents/* with gateway access via /gateway/documents/*.
+
+19) Q: How are uploaded files served?
+    A: DocumentService hosts static files under /uploads/*; the gateway forwards /uploads/* upstream.
+
+20) Q: Name some DocumentService endpoints.
+    A: upload, upload-invoice, upload-label, upload-customs, get by id, list by shipment, delivery-proof upload and fetch.
+
+21) Q: What does AdminService provide?
+    A: Admin-only APIs for dashboard, hubs/locations management, reports, and exception workflows.
+
+22) Q: Give an example admin exception workflow.
+    A: PUT /api/shipments/{id}/resolve (via /gateway/admin/shipments/{id}/resolve).
+
+23) Q: How is logging handled?
+    A: Serilog is added to services with file sink support.
+
+24) Q: What’s a background worker and why use it?
+    A: A hosted BackgroundService to continuously consume RabbitMQ messages and update tracking without blocking HTTP requests.
+
+25) Q: How do you ensure the consumer is resilient?
+    A: Use durable queue declarations, ACK after successful processing, and make consumer handlers idempotent (upserts).
+
+26) Q: Where does Swagger come from?
+    A: Each service exposes swagger; the gateway aggregates multiple swagger JSON endpoints into a single UI.
+
+27) Q: How do you handle CORS in this setup?
+    A: Gateway enables CORS for the Angular dev origin, so the browser can call gateway APIs.
+
+28) Q: Why separate DocumentService from ShipmentService?
+    A: Files and document concerns are distinct (storage/serving) and can scale independently.
+
+29) Q: Why separate TrackingService?
+    A: Tracking is a read model built from events; it can scale separately and serve public queries.
+
+30) Q: What is the role of shared libraries?
+    A: SmartShip.Core provides cross-cutting utilities; SmartShip.Contracts defines event DTOs shared across services.
+
+31) Q: How do you version APIs?
+    A: Service swagger is labeled v1; gateway swagger endpoints map each service’s v1 swagger.json.
+
+32) Q: What’s the biggest risk of an API gateway?
+    A: It can become a bottleneck or single point of failure; mitigate with scaling and simple routing.
+
+33) Q: What’s the difference between /gateway/documents/* and /uploads/*?
+    A: /gateway/documents/* is the API; /uploads/* is static file serving.
+
+34) Q: How do you store tokens in the Angular app?
+    A: sessionStorage for access token and refresh token.
+
+35) Q: How do you refresh tokens?
+    A: The client calls /gateway/auth/refresh; on errors it logs out and clears tokens.
+
+36) Q: What does “explicit identity routes” mean?
+    A: Only specific upstream templates are exposed (Profile/Roles/Users/admin), not a catch-all.
+
+37) Q: Why avoid /gateway/identity/{everything}?
+    A: It can unintentionally expose sensitive or redundant endpoints and makes gateway surface harder to control.
+
+38) Q: How would you add a new service?
+    A: Add service project + swagger, then add Ocelot routes + SwaggerEndPoints entry.
+
+39) Q: What’s an IntegrationEvent?
+    A: A contract type representing a domain event published across services (from SmartShip.Contracts.Events).
+
+40) Q: What’s the advantage of event-driven tracking?
+    A: Decouples shipment writes from tracking reads and provides eventually-consistent updates.
+
+41) Q: How do you handle message schema evolution?
+    A: Keep contract DTOs in a shared library and version fields carefully; avoid breaking changes.
+
+42) Q: What is idempotency in consumers?
+    A: Processing the same event multiple times results in the same final state (e.g., using upserts).
+
+43) Q: What are the service boundaries?
+    A: Identity, Shipment, Tracking, Document, Admin — each owns its domain and database models.
+
+44) Q: How does the UI call shipments?
+    A: It calls /gateway/shipments/* endpoints; gateway forwards to ShipmentService /api/shipments/*.
+
+45) Q: How does anonymous tracking work?
+    A: TrackingController allows anonymous access for selected GET endpoints (design for public tracking pages).
+
+46) Q: How would you debug a route issue?
+    A: Check ocelot.json upstream/downstream templates, service base paths, and gateway logs.
+
+47) Q: How would you debug a message not being consumed?
+    A: Verify exchange/queue bindings and routingKey, check RabbitMQ management UI, inspect consumer logs.
+
+48) Q: What runtime versions are involved?
+    A: Services target net8.0; gateway targets net10.0.
+
+49) Q: What would you improve next?
+    A: Add retries/circuit-breakers, distributed tracing, and more explicit event handling for all bound event types.
+
+50) Q: What’s your favorite part to explain?
+    A: The end-to-end flow: create shipment -> publish event -> tracking consumer updates timeline -> UI shows updated status.

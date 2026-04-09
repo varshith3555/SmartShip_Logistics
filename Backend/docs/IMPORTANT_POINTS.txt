@@ -1,0 +1,44 @@
+SMARTSHIP LOGISTICS — IMPORTANT POINTS (INTERVIEW/DELIVERY)
+
+1) Gateway as the single entry point
+- The frontend is designed to call a consistent API surface via the gateway.
+- Angular dev server proxies /gateway and /uploads to the gateway base URL.
+
+2) Identity routing is intentionally restrictive
+- The gateway does NOT use a broad /gateway/identity/{everything} passthrough.
+- Auth is exposed only via /gateway/auth/*.
+- Identity management is exposed only via explicit:
+  - /gateway/identity/Profile
+  - /gateway/identity/Roles
+  - /gateway/identity/Users
+  - /gateway/identity/admin/*
+
+3) Event-driven tracking updates
+- Shipment/Admin can publish IntegrationEvent messages.
+- TrackingService consumes from RabbitMQ and builds/updates tracking read state.
+- Exchange: smartship_events (direct)
+- Queue: tracking_queue
+- Routing keys: event type names (ShipmentCreatedEvent, ShipmentBookedEvent, ShipmentDeliveredEvent, TrackingUpdatedEvent)
+
+4) Clear service boundaries
+- IdentityService: auth + roles/users/profile
+- ShipmentService: shipment domain + emits events
+- TrackingService: tracking APIs + consumer
+- DocumentService: uploads + delivery proof + static files
+- AdminService: hubs/locations/reports/exceptions
+
+5) Observability
+- Serilog is integrated into services (console + file sinks).
+
+6) Framework versions matter
+- Most services: net8.0
+- Gateway: net10.0 (validate runtime availability in your environment)
+
+7) Common pitfalls (practical)
+- Building the gateway can fail if the gateway executable is currently running (file lock on Windows).
+- Ensure RabbitMQ and SQL Server are up before starting services that depend on them.
+
+8) What to emphasize in a demo
+- End-to-end: create shipment -> event published -> tracking read model updates -> UI sees updated timeline.
+- Upload document -> retrieve metadata -> serve file via /uploads.
+- Admin: hubs/locations CRUD + reports endpoints.

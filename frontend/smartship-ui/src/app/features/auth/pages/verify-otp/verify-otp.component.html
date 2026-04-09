@@ -1,0 +1,62 @@
+<div class="auth-container">
+  <div class="auth-wrapper">
+    <div class="auth-brand">
+      <div class="brand-icon">
+        <mat-icon>verified_user</mat-icon>
+      </div>
+      <h1 class="brand-title">Verify OTP</h1>
+      <p class="brand-subtitle">Enter the verification code sent to your email</p>
+    </div>
+
+    <mat-card class="auth-card">
+      <mat-card-content>
+        <h2 class="auth-title">Email Verification</h2>
+        
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email Address</mat-label>
+            <input matInput formControlName="email" type="email" placeholder="you@example.com">
+            <mat-error *ngIf="form.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="form.get('email')?.hasError('email')">
+              Please enter a valid email
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>OTP Code</mat-label>
+            <input matInput formControlName="otp" maxlength="6" placeholder="Enter 6-digit code">
+            <mat-error *ngIf="form.get('otp')?.hasError('required')">
+              OTP is required
+            </mat-error>
+            <mat-error *ngIf="form.get('otp')?.hasError('minlength') || form.get('otp')?.hasError('maxlength')">
+              OTP must be 6 digits
+            </mat-error>
+          </mat-form-field>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            class="submit-button"
+            [disabled]="form.invalid">
+            Verify OTP
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <p class="link-text">
+            Didn't receive the code? 
+            <a class="link" style="cursor: pointer;" (click)="onResendOtp()">
+              {{ isResending ? 'Resending…' : 'Resend OTP' }}
+            </a>
+          </p>
+          <p class="link-text">
+            <a routerLink="/auth/login" class="link">Back to Login</a>
+          </p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,401 @@
+// Modern Premium Login Page
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ffffff 0%, #fff8f0 40%, #ffe8cc 100%);
+  background-attachment: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle radial gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(243, 156, 18, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 152, 0, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+}
+
+.auth-wrapper {
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(243, 156, 18, 0.3);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: white;
+  }
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ss-text);
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: 1.063rem;
+  color: var(--ss-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+// Premium Glass Card
+.auth-card {
+  padding: 48px !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 20px 60px rgba(15, 23, 42, 0.12),
+    0 8px 16px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 
+      0 24px 70px rgba(15, 23, 42, 0.15),
+      0 10px 20px rgba(15, 23, 42, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  }
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ss-text);
+  margin: 0 0 32px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// Enhanced Input Wrapper
+.input-wrapper {
+  position: relative;
+}
+
+.full-width {
+  width: 100%;
+
+  // Input icon styling
+  .input-icon {
+    color: var(--ss-text-muted);
+    margin-right: 12px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    transition: color 0.3s ease;
+  }
+
+  // Enhanced outline styling
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #e2e8f0 !important;
+    border-width: 2px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  // Focus state with glow
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--ss-primary) !important;
+      border-width: 2px !important;
+      box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+    }
+
+    .input-icon {
+      color: var(--ss-primary);
+    }
+  }
+
+  // Hover state
+  &:hover:not(.mat-focused) {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #cbd5e1 !important;
+    }
+  }
+
+  // Input field styling
+  .mat-mdc-form-field-input-control {
+    color: var(--ss-text) !important;
+    font-size: 1rem;
+    padding-left: 8px;
+  }
+
+  // Label styling
+  .mat-mdc-form-field-label {
+    color: var(--ss-text-muted) !important;
+  }
+
+  // Error state with softer red
+  &.mat-form-field-invalid {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #f87171 !important;
+    }
+
+    .input-icon {
+      color: #f87171;
+    }
+  }
+
+  // Error message styling
+  .mat-mdc-form-field-error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+// Premium Gradient Button
+.submit-button {
+  width: 100%;
+  height: 56px !important;
+  padding: 0 32px !important;
+  font-size: 1.063rem !important;
+  font-weight: 600 !important;
+  margin-top: 8px;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(243, 156, 18, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+
+  // Shine effect
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(243, 156, 18, 0.4) !important;
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0) scale(1);
+  }
+
+  &:disabled {
+    background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%) !important;
+    color: white !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none !important;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover:not(:disabled) mat-icon {
+    transform: translateX(4px);
+  }
+}
+
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 0;
+  color: var(--ss-text-muted);
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(15, 23, 42, 0.08);
+  }
+
+  span {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: lowercase;
+  }
+}
+
+.oauth-button {
+  width: 100%;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+// Auth Links
+.auth-links {
+  margin-top: 28px;
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid #f1f3f5;
+}
+
+.link-text {
+  margin: 10px 0;
+  color: var(--ss-text-muted);
+  font-size: 0.938rem;
+  line-height: 1.6;
+}
+
+.link {
+  color: var(--ss-primary-dark);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--ss-primary);
+    transition: width 0.3s ease;
+  }
+
+  &:hover {
+    color: var(--ss-primary);
+
+    &::after {
+      width: 100%;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 640px) {
+  .auth-container {
+    padding: 20px;
+  }
+
+  .auth-card {
+    padding: 36px 24px !important;
+  }
+
+  .brand-icon {
+    width: 64px;
+    height: 64px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+
+  .auth-form {
+    gap: 20px;
+  }
+
+  .submit-button {
+    height: 52px !important;
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 20px !important;
+  }
+
+  .brand-title {
+    font-size: 1.75rem;
+  }
+}

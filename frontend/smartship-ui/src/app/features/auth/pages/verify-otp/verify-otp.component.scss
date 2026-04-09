@@ -1,0 +1,124 @@
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--ss-primary-light) 0%, #ffffff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-wrapper {
+  width: 100%;
+  max-width: 480px;
+}
+
+.auth-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  width: 80px;
+  height: 80px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 16px rgba(255, 152, 0, 0.2);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--ss-primary-dark);
+  }
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--ss-text);
+  margin: 0 0 12px;
+}
+
+.brand-subtitle {
+  font-size: 1.1rem;
+  color: var(--ss-text-muted);
+  margin: 0;
+}
+
+.auth-card {
+  padding: 40px !important;
+  border: 2px solid var(--ss-border) !important;
+  box-shadow: 0 8px 32px rgba(255, 152, 0, 0.15) !important;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--ss-text);
+  margin: 0 0 32px;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 14px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  height: 56px !important;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-links {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.link-text {
+  margin: 8px 0;
+  color: var(--ss-text-muted);
+  font-size: 0.95rem;
+}
+
+.link {
+  color: var(--ss-primary-dark);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--ss-accent);
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-card {
+    padding: 32px 24px !important;
+  }
+
+  .brand-title {
+    font-size: 2rem;
+  }
+
+  .brand-subtitle {
+    font-size: 1rem;
+  }
+}

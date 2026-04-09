@@ -1,0 +1,254 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SmartShip App Shell — Premium SaaS Sidebar
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Root Container ─────────────────────────────────────────────── */
+.shell {
+  min-height: 100vh;
+  background: var(--ss-surface);
+}
+
+/* ── Sidenav Panel ──────────────────────────────────────────────── */
+.shell__sidenav {
+  width: 264px;
+  background: #ffffff;
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  transition: width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.04);
+}
+
+.shell--collapsed .shell__sidenav {
+  width: 72px;
+}
+
+/* ── Brand / Logo ───────────────────────────────────────────────── */
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 20px 18px 16px;
+  min-height: 64px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.shell__logo {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%);
+  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.30);
+}
+
+.shell__brand-text {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+  color: var(--ss-text);
+  white-space: nowrap;
+}
+
+/* ── Section Labels ─────────────────────────────────────────────── */
+.shell__section-label {
+  padding: 20px 18px 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #c4c9d4;
+  text-transform: uppercase;
+}
+
+/* ── Nav List ───────────────────────────────────────────────────── */
+.shell__nav {
+  padding: 8px 0 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* override Material list item */
+.shell__nav .mat-mdc-list-item {
+  border-radius: 0 !important;
+  margin: 0 !important;
+  min-height: 46px !important;
+  transition: background-color 0.14s ease !important;
+  position: relative;
+  padding-left: 18px !important;
+}
+
+.shell__nav .mat-mdc-list-item:hover {
+  background: #fafafa !important;
+}
+
+/* ── Active Link ────────────────────────────────────────────────── */
+.shell__link--active {
+  background: #fff8f5 !important;
+  font-weight: 600 !important;
+}
+
+/* Thick orange left-border indicator */
+.shell__link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  background: var(--ss-primary);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Icon color for active item */
+.shell__link--active .mat-icon,
+.shell__link--active [matlistitemicon] {
+  color: var(--ss-primary) !important;
+}
+
+/* Text color for active item */
+.shell__link--active .mdc-list-item__primary-text {
+  color: var(--ss-primary-dark) !important;
+  font-weight: 700 !important;
+}
+
+/* Icon color for inactive items */
+.shell__nav .mat-mdc-list-item:not(.shell__link--active) .mat-icon {
+  color: #a0a9b8 !important;
+  transition: color 0.14s ease;
+}
+
+.shell__nav .mat-mdc-list-item:not(.shell__link--active):hover .mat-icon {
+  color: var(--ss-text-secondary) !important;
+}
+
+/* ── Sidenav Footer (Collapse Button) ───────────────────────────── */
+.shell__sidenav-footer {
+  padding: 10px 12px 16px;
+  border-top: 1px solid #f5f5f5;
+}
+
+.shell__collapse-btn {
+  width: 100% !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ss-text-muted) !important;
+  border-color: transparent !important;
+  padding-left: 10px !important;
+  transition: all 0.15s ease !important;
+}
+
+.shell__collapse-btn:hover {
+  background: #f5f5f5 !important;
+  color: var(--ss-text-secondary) !important;
+}
+
+.shell--collapsed .shell__collapse-btn span {
+  display: none;
+}
+
+/* ── Main Content Area ──────────────────────────────────────────── */
+.shell__main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--ss-surface);
+}
+
+/* ── Sticky Top Toolbar ─────────────────────────────────────────── */
+.shell__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 60px !important;
+  padding: 0 20px 0 16px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #f0f0f0;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.04);
+  color: var(--ss-text);
+  display: flex;
+  align-items: center;
+}
+
+.shell__toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+/* Breadcrumb-style title in toolbar */
+.shell__title {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: var(--ss-text-muted);
+}
+
+.shell__menu-btn {
+  margin-right: 4px;
+}
+
+/* ── Role Badge ─────────────────────────────────────────────────── */
+.shell__role {
+  margin-right: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+.shell__role--admin {
+  background: #fff4f0;
+  border-color: rgba(255, 107, 53, 0.35);
+  color: var(--ss-primary-dark);
+}
+
+.shell__role--customer {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+/* ── Account / User Menu ────────────────────────────────────────── */
+.shell__menu-header {
+  opacity: 1 !important;
+  cursor: default !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ss-text-muted) !important;
+}
+
+.shell__menu-header-icon {
+  margin-right: 0 !important;
+}
+
+/* ── Page Content ───────────────────────────────────────────────── */
+.shell__content {
+  flex: 1;
+  padding: 28px 28px 40px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 959px) {
+  .shell__content {
+    padding: 16px;
+  }
+}

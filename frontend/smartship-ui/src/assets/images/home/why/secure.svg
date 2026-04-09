@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-label="Secure cargo handling">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="0.65" stop-color="#2a3a53"/>
+      <stop offset="1" stop-color="#f39c12"/>
+    </linearGradient>
+    <linearGradient id="overlay" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect width="1200" height="700" fill="url(#overlay)"/>
+
+  <!-- Container pattern -->
+  <g opacity="0.18" fill="#ffffff">
+    <rect x="90" y="130" width="280" height="160" rx="16"/>
+    <rect x="400" y="130" width="280" height="160" rx="16"/>
+    <rect x="710" y="130" width="340" height="160" rx="16"/>
+    <rect x="90" y="320" width="340" height="160" rx="16"/>
+    <rect x="460" y="320" width="300" height="160" rx="16"/>
+    <rect x="790" y="320" width="260" height="160" rx="16"/>
+  </g>
+
+  <!-- Shield icon -->
+  <g transform="translate(520 210)" opacity="0.88">
+    <path d="M80 0 160 26v78c0 62-42 120-80 136C42 224 0 166 0 104V26L80 0Z" fill="#fdf2e3"/>
+    <path d="M80 22 136 40v64c0 50-34 96-56 108-22-12-56-58-56-108V40l56-18Z" fill="#f39c12" opacity="0.65"/>
+    <path d="M54 110 72 128 112 84" fill="none" stroke="#1e293b" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+  </g>
+
+  <!-- Accent dots -->
+  <g fill="#ffffff" opacity="0.10">
+    <circle cx="140" cy="90" r="5"/>
+    <circle cx="220" cy="70" r="4"/>
+    <circle cx="320" cy="105" r="6"/>
+    <circle cx="980" cy="86" r="5"/>
+    <circle cx="1080" cy="120" r="4"/>
+  </g>
+</svg>

@@ -1,0 +1,97 @@
+<app-landing-navbar></app-landing-navbar>
+
+<div class="contact-container">
+  <!-- Hero Section -->
+  <section class="contact-hero">
+    <div class="hero-content">
+      <h1 class="page-title">Get In Touch</h1>
+      <p class="page-subtitle">
+        We're here to help! Reach out to us through any of the following channels.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Content -->
+  <section class="contact-content">
+    <div class="content-wrapper">
+      
+      <!-- Contact Cards Grid -->
+      <div class="contact-cards-grid">
+        
+        <!-- Contact Information Card -->
+        <div class="contact-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <mat-icon>contact_mail</mat-icon>
+            </div>
+            <h2 class="card-title">Contact Information</h2>
+          </div>
+          
+          <div class="card-body">
+            <div *ngFor="let info of contactInfo" class="info-row">
+              <div class="info-icon">
+                <mat-icon>{{ info.icon }}</mat-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">{{ info.title }}</span>
+                <a *ngIf="info.link" [href]="info.link" class="info-value">{{ info.value }}</a>
+                <span *ngIf="!info.link" class="info-value">{{ info.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Hours Card -->
+        <div class="contact-card">
+          <div class="card-header">
+            <div class="header-icon">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <h2 class="card-title">Business Hours</h2>
+          </div>
+          
+          <div class="card-body">
+            <div class="hours-grid">
+              <div class="hours-row">
+                <span class="day">Monday - Friday</span>
+                <span class="time">9:00 AM - 6:00 PM</span>
+              </div>
+              <div class="hours-row">
+                <span class="day">Saturday</span>
+                <span class="time">10:00 AM - 4:00 PM</span>
+              </div>
+              <div class="hours-row">
+                <span class="day">Sunday</span>
+                <span class="time">Closed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Support Banner -->
+      <div class="support-card">
+        <div class="support-icon">
+          <mat-icon>support_agent</mat-icon>
+        </div>
+        <div class="support-content">
+          <h3 class="support-title">24/7 Customer Support</h3>
+          <p class="support-text">
+            Our dedicated support team is available around the clock to assist you with any questions or concerns.
+          </p>
+        </div>
+      </div>
+
+      <!-- Chat Hint -->
+      <div class="chat-hint">
+        <mat-icon>info</mat-icon>
+        <p>Need quick help? Click the chat icon <mat-icon class="arrow-icon">arrow_forward</mat-icon></p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- Chat Widget -->
+<app-chat-widget></app-chat-widget>

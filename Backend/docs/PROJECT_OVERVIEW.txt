@@ -1,0 +1,52 @@
+SMARTSHIP LOGISTICS — PROJECT OVERVIEW
+
+1) What this project is
+SmartShip Logistics is a microservice-based logistics/shipping platform with an Angular (Material) frontend, an Ocelot API Gateway, and multiple ASP.NET Core Web API services. It supports authentication, shipment lifecycle management, tracking/timeline updates, document uploads, and admin operations.
+
+2) High-level components
+- Frontend: Angular 17 app (frontend/smartship-ui)
+- API Gateway: SmartShip.Gateway (Ocelot + SwaggerForOcelot)
+- Microservices (ASP.NET Core Web API):
+  - SmartShip.IdentityService (Auth + Users/Roles/Profile + admin endpoints)
+  - SmartShip.ShipmentService (Shipments domain + emits events)
+  - SmartShip.TrackingService (Tracking APIs + background RabbitMQ consumer)
+  - SmartShip.DocumentService (Document metadata + file uploads + static hosting)
+  - SmartShip.AdminService (Admin dashboard, hubs/locations, reports, exceptions)
+- Shared libraries:
+  - SmartShip.Core (cross-cutting utilities incl. messaging abstraction)
+  - SmartShip.Contracts (integration event contracts)
+
+3) How requests flow
+- The Angular app calls the gateway using paths like:
+  - /gateway/auth/*
+  - /gateway/shipments/*
+  - /gateway/tracking/*
+  - /gateway/documents/*
+  - /gateway/admin/*
+- The gateway routes requests to service-specific ports and aggregates Swagger into a single gateway UI.
+- Files are served via the gateway path /uploads/* which forwards to the DocumentService static host.
+
+4) Data + messaging at a glance
+- Data persistence: SQL Server via EF Core (services use Microsoft.EntityFrameworkCore.SqlServer).
+- Auth: JWT-based authentication; role-based authorization is used for protected endpoints.
+- Async messaging: RabbitMQ (direct exchange) used for integration events.
+  - Exchange: smartship_events (direct)
+  - TrackingService binds queue tracking_queue to routing keys named after event types.
+
+5) Solution layout (repo)
+- SmartShip.Logistics.sln: .NET solution entry point
+- docker-compose.yml: local container stack definition
+- gateway/: API Gateway project
+- services/: microservices
+- shared/: shared libraries
+- frontend/: Angular app
+
+6) Target frameworks (as configured in csproj)
+- Gateway: net10.0
+- Services (Identity/Shipment/Admin/etc.): net8.0
+
+7) What this documentation is for
+This docs set is written to be:
+- Interview-friendly (clear architecture + flows)
+- Revision-friendly (simple headings + bullet lists)
+- Grounded in the repository’s actual code and configuration

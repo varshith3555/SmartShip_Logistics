@@ -1,0 +1,149 @@
+<mat-sidenav-container class="shell" [class.shell--collapsed]="collapsed">
+  <mat-sidenav
+    #drawer
+    class="shell__sidenav"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+    [fixedInViewport]="true"
+  >
+    <div class="shell__brand">
+      <span class="shell__logo" aria-hidden="true">SS</span>
+      <span class="shell__brand-text" *ngIf="!collapsed">SmartShip</span>
+    </div>
+
+    <mat-nav-list class="shell__nav">
+      <div class="shell__section" *ngIf="isCustomer">
+        <div class="shell__section-label" *ngIf="!collapsed">Customer</div>
+        <a
+          mat-list-item
+          routerLink="/dashboard"
+          routerLinkActive="shell__link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeOnMobile(drawer)"
+        >
+          <mat-icon matListItemIcon>dashboard</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/shipments/create" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>add_box</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Create Shipment</span>
+        </a>
+        <a
+          mat-list-item
+          routerLink="/shipments/my"
+          routerLinkActive="shell__link--active"
+          (click)="closeOnMobile(drawer)"
+          *ngIf="isCustomer"
+        >
+          <mat-icon matListItemIcon>inventory_2</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">My Shipments</span>
+        </a>
+        <a mat-list-item routerLink="/tracking" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>local_shipping</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Tracking</span>
+        </a>
+        <a mat-list-item routerLink="/documents" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>description</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Documents</span>
+        </a>
+      </div>
+
+      <mat-divider *ngIf="isAdmin && isCustomer"></mat-divider>
+
+      <div class="shell__section" *ngIf="isAdmin">
+        <div class="shell__section-label" *ngIf="!collapsed">Admin</div>
+        <a
+          mat-list-item
+          routerLink="/admin"
+          routerLinkActive="shell__link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeOnMobile(drawer)"
+        >
+          <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Admin Dashboard</span>
+        </a>
+        <a mat-list-item routerLink="/admin/shipments" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>assignment</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Manage Shipments</span>
+        </a>
+        <a mat-list-item routerLink="/admin/users" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>group</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Users</span>
+        </a>
+        <a mat-list-item routerLink="/admin/exceptions" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>error_outline</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Exceptions</span>
+        </a>
+        <a mat-list-item routerLink="/admin/documents" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>description</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Documents</span>
+        </a>
+        <a mat-list-item routerLink="/admin/hubs-locations" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>hub</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Hubs &amp; Locations</span>
+        </a>
+        <a mat-list-item routerLink="/admin/reports" routerLinkActive="shell__link--active" (click)="closeOnMobile(drawer)">
+          <mat-icon matListItemIcon>bar_chart</mat-icon>
+          <span matListItemTitle *ngIf="!collapsed">Reports</span>
+        </a>
+      </div>
+    </mat-nav-list>
+
+    <div class="shell__sidenav-footer">
+      <button
+        mat-stroked-button
+        type="button"
+        class="shell__collapse-btn"
+        (click)="toggleCollapsed()"
+        *ngIf="(isHandset$ | async) === false"
+        [matTooltip]="collapsed ? 'Expand menu' : 'Collapse menu'"
+        matTooltipPosition="right"
+      >
+        <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+        <span *ngIf="!collapsed">Collapse</span>
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell__main">
+    <mat-toolbar class="shell__toolbar">
+      <button
+        mat-icon-button
+        type="button"
+        class="shell__menu-btn"
+        (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async"
+        aria-label="Open menu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="shell__title">SmartShip</span>
+      <span class="shell__toolbar-spacer"></span>
+
+      <span class="shell__role" *ngIf="role as r" [class.shell__role--admin]="isAdmin" [class.shell__role--customer]="isCustomer">
+        {{ r | uppercase }}
+      </span>
+
+      <button mat-icon-button type="button" [matMenuTriggerFor]="userMenu" aria-label="Account menu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <div class="shell__menu-header" mat-menu-item disabled>
+          <mat-icon class="shell__menu-header-icon">badge</mat-icon>
+          <span>{{ role || 'User' }}</span>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item type="button" (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          <span>Log out</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="shell__content">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-loading-spinner />

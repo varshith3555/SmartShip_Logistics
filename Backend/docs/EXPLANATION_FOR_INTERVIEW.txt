@@ -1,0 +1,41 @@
+SMARTSHIP LOGISTICS — EXPLANATION FOR INTERVIEW
+
+1) 30-second pitch
+“I built SmartShip Logistics, a microservice-based logistics platform. The Angular frontend talks to a single Ocelot API Gateway which routes requests to separate ASP.NET Core services for identity, shipments, tracking, documents, and admin capabilities. The system uses EF Core with SQL Server for persistence and RabbitMQ for event-driven updates—especially for tracking, where a background consumer builds a tracking status/timeline from shipment events.”
+
+2) 2-minute walkthrough (what happens end-to-end)
+- Users authenticate via the gateway (/gateway/auth/*), which forwards to IdentityService.
+- Customers create and manage shipments via ShipmentService through /gateway/shipments/*.
+- When a shipment is created (or tracking is updated), services publish integration events to RabbitMQ.
+- TrackingService runs a BackgroundService consumer that subscribes to those events on a direct exchange (smartship_events) and updates tracking status/history in its database.
+- Users can query tracking via /gateway/tracking/*, which returns current status and timeline.
+- Documents (invoice/label/customs/general) are uploaded via /gateway/documents/* and served back through a clean /uploads/* path that the gateway forwards to DocumentService.
+- Admin workflows are accessed via /gateway/admin/* (dashboard, hubs/locations, reports, exceptions).
+
+3) What I personally implemented/owned (edit to match your story)
+- Gateway routing and the public API surface
+- Microservice boundaries and shared contracts
+- EF Core persistence patterns + migrations
+- JWT auth integration and role-based access policies
+- RabbitMQ publishing/consuming patterns for integration events
+- Angular client integration via gateway with a dev proxy
+
+4) Why an API gateway?
+- The frontend only needs one base URL.
+- It centralizes cross-cutting concerns (CORS, route management, aggregated Swagger).
+- It prevents accidentally exposing internal service routes and allows explicit “public surface” control.
+
+5) Why events for tracking?
+- Tracking is a classic read-model that benefits from async updates.
+- Shipment creation/updates can happen independently; the TrackingService can build a timeline from events.
+- It improves decoupling: shipment logic doesn’t need to synchronously call tracking.
+
+6) Strong talking points
+- “I used routing keys equal to the event type name to keep producer/consumer contract simple.”
+- “TrackingService binds a single queue to multiple event types and selectively deserializes based on routingKey.”
+- “The gateway exposes only a curated set of identity routes, avoiding broad passthrough.”
+
+7) Common interview follow-ups (suggested answers)
+- Scalability: scale services independently; RabbitMQ smooths spikes; gateway simplifies client routing.
+- Reliability: retry strategies for publishing, durable queues/exchanges, idempotent upserts in consumer.
+- Security: JWT + role-based authorization; least-privilege gateway route exposure.

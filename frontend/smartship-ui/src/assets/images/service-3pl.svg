@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-label="3rd party logistics illustration">
+  <rect x="0" y="0" width="900" height="620" rx="28" fill="#ffffff"/>
+
+  <!-- Warehouse racks -->
+  <g transform="translate(90 130)">
+    <rect x="0" y="0" width="720" height="360" rx="24" fill="#f8f9fa"/>
+
+    <g opacity="0.14" fill="#1e293b">
+      <rect x="60" y="60" width="180" height="240" rx="14"/>
+      <rect x="270" y="60" width="180" height="240" rx="14"/>
+      <rect x="480" y="60" width="180" height="240" rx="14"/>
+    </g>
+
+    <g opacity="0.18" fill="#f39c12">
+      <rect x="86" y="92" width="128" height="46" rx="12"/>
+      <rect x="86" y="152" width="128" height="46" rx="12"/>
+      <rect x="86" y="212" width="128" height="46" rx="12"/>
+
+      <rect x="296" y="92" width="128" height="46" rx="12"/>
+      <rect x="296" y="152" width="128" height="46" rx="12"/>
+      <rect x="296" y="212" width="128" height="46" rx="12"/>
+
+      <rect x="506" y="92" width="128" height="46" rx="12"/>
+      <rect x="506" y="152" width="128" height="46" rx="12"/>
+      <rect x="506" y="212" width="128" height="46" rx="12"/>
+    </g>
+
+    <!-- Conveyor line -->
+    <rect x="60" y="310" width="600" height="14" rx="7" fill="#1e293b" opacity="0.08"/>
+    <g fill="#1e293b" opacity="0.16">
+      <circle cx="120" cy="317" r="8"/>
+      <circle cx="200" cy="317" r="8"/>
+      <circle cx="280" cy="317" r="8"/>
+      <circle cx="360" cy="317" r="8"/>
+      <circle cx="440" cy="317" r="8"/>
+      <circle cx="520" cy="317" r="8"/>
+      <circle cx="600" cy="317" r="8"/>
+    </g>
+  </g>
+
+  <!-- Integration nodes -->
+  <g transform="translate(170 70)">
+    <rect x="0" y="0" width="220" height="86" rx="18" fill="#f39c12" opacity="0.14"/>
+    <rect x="260" y="0" width="220" height="86" rx="18" fill="#f39c12" opacity="0.14"/>
+    <rect x="520" y="0" width="220" height="86" rx="18" fill="#f39c12" opacity="0.14"/>
+
+    <g stroke="#d68910" stroke-opacity="0.35" stroke-width="8" fill="none" stroke-linecap="round">
+      <path d="M220 43 H260"/>
+      <path d="M480 43 H520"/>
+    </g>
+
+    <g fill="#1e293b" opacity="0.18">
+      <rect x="28" y="22" width="120" height="14" rx="7"/>
+      <rect x="288" y="22" width="120" height="14" rx="7"/>
+      <rect x="548" y="22" width="120" height="14" rx="7"/>
+      <rect x="28" y="46" width="164" height="12" rx="6"/>
+      <rect x="288" y="46" width="164" height="12" rx="6"/>
+      <rect x="548" y="46" width="164" height="12" rx="6"/>
+    </g>
+  </g>
+</svg>

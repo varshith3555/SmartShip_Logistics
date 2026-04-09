@@ -1,0 +1,150 @@
+.profile-container {
+  min-height: calc(100vh - 70px);
+  background: var(--ss-surface-secondary);
+  padding: 40px 24px;
+}
+
+.profile-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 40px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  box-shadow: var(--ss-shadow);
+  border: 2px solid var(--ss-border);
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  background: var(--ss-primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: var(--ss-primary-dark);
+  }
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ss-text);
+  margin: 0 0 8px;
+}
+
+.profile-email {
+  font-size: 1.1rem;
+  color: var(--ss-text-muted);
+  margin: 0 0 12px;
+}
+
+.profile-role {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--ss-primary-light);
+  color: var(--ss-primary-dark);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-card {
+  padding: 32px !important;
+  border: 2px solid var(--ss-border) !important;
+}
+
+.card-header {
+  margin-bottom: 32px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ss-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon {
+    color: var(--ss-primary-dark);
+  }
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.save-button {
+  margin-top: 16px;
+  padding: 12px 32px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  height: 48px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  .profile-name {
+    font-size: 1.75rem;
+  }
+
+  .profile-card {
+    padding: 24px !important;
+  }
+
+  .save-button {
+    width: 100%;
+  }
+}

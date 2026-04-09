@@ -1,0 +1,126 @@
+<div class="chat-widget">
+  <!-- Chat Window -->
+  <div class="chat-window" [@chatWindow]="isOpen ? 'open' : 'closed'">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-content">
+        <div class="header-avatar">
+          <mat-icon>support_agent</mat-icon>
+        </div>
+        <div class="header-text">
+          <h3>SmartShip Support</h3>
+          <p class="status-indicator">
+            <span class="status-dot"></span>
+            Online now
+          </p>
+        </div>
+      </div>
+      <button mat-icon-button class="close-btn" (click)="toggleChat()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Chat Body -->
+    <div class="chat-body" #chatBody>
+      <!-- Welcome Message (Always visible) -->
+      <div class="bot-message-wrapper" @fadeIn>
+        <div class="message-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="message-group">
+          <div class="message-bubble bot-bubble">
+            <p>👋 Hi! I'm here to help you with SmartShip.</p>
+          </div>
+          <span class="message-time">Just now</span>
+        </div>
+      </div>
+
+      <!-- FAQ Quick Replies (Show when no conversation) -->
+      <div class="quick-replies" *ngIf="chatMessages.length === 0" @fadeIn>
+        <p class="quick-replies-label">Quick questions:</p>
+        <button 
+          *ngFor="let faq of faqs" 
+          class="quick-reply-btn"
+          (click)="selectFAQ(faq)"
+        >
+          <mat-icon>{{ faq.icon }}</mat-icon>
+          <span>{{ faq.question }}</span>
+        </button>
+      </div>
+
+      <!-- Chat Messages -->
+      <div *ngFor="let message of chatMessages" @fadeIn>
+        <!-- User Message -->
+        <div class="user-message-wrapper" *ngIf="message.type === 'question'">
+          <div class="message-group user-group">
+            <div class="message-bubble user-bubble">
+              <p>{{ message.content }}</p>
+            </div>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+
+        <!-- Bot Message -->
+        <div class="bot-message-wrapper" *ngIf="message.type === 'answer'">
+          <div class="message-avatar">
+            <mat-icon>smart_toy</mat-icon>
+          </div>
+          <div class="message-group">
+            <div class="message-bubble bot-bubble">
+              <p>{{ message.content }}</p>
+            </div>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator (when bot is "typing") -->
+      <div class="bot-message-wrapper" *ngIf="isTyping" @fadeIn>
+        <div class="message-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="message-group">
+          <div class="message-bubble bot-bubble typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Show FAQ buttons again after conversation -->
+      <div class="quick-replies" *ngIf="chatMessages.length > 0" @fadeIn>
+        <p class="quick-replies-label">Ask another question:</p>
+        <button 
+          *ngFor="let faq of faqs" 
+          class="quick-reply-btn"
+          (click)="selectFAQ(faq)"
+        >
+          <mat-icon>{{ faq.icon }}</mat-icon>
+          <span>{{ faq.question }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="chat-footer">
+      <div class="footer-hint">
+        <mat-icon>info</mat-icon>
+        <span>Need more help? Email us at <a href="mailto:support@smartship.com">support&#64;smartship.com</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Button -->
+  <button 
+    class="chat-toggle-btn" 
+    [class.active]="isOpen"
+    (click)="toggleChat()"
+    mat-fab
+    [attr.aria-label]="isOpen ? 'Close chat' : 'Open chat'"
+  >
+    <mat-icon *ngIf="!isOpen">chat</mat-icon>
+    <mat-icon *ngIf="isOpen">close</mat-icon>
+    <span class="notification-badge" *ngIf="!isOpen && hasUnreadMessages">1</span>
+  </button>
+</div>

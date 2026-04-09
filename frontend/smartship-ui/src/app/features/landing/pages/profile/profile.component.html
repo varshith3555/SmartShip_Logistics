@@ -1,0 +1,125 @@
+<app-landing-navbar></app-landing-navbar>
+
+<div class="profile-container">
+  <div class="profile-wrapper">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <div class="profile-info">
+        <h1 class="profile-name">{{ userInfo.name || 'User' }}</h1>
+        <p class="profile-email">{{ userInfo.email }}</p>
+        <span class="profile-role">{{ userInfo.role || 'Customer' }}</span>
+      </div>
+    </div>
+
+    <div class="profile-content">
+      <!-- Profile Information Card -->
+      <mat-card class="profile-card">
+        <mat-card-content>
+          <div class="card-header">
+            <h2 class="card-title">
+              <mat-icon>person</mat-icon>
+              Profile Information
+            </h2>
+          </div>
+          
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="name">
+              <mat-error *ngIf="profileForm.get('name')?.hasError('required')">
+                Name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput type="email" formControlName="email">
+              <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+                Invalid email format
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phone">
+              <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">
+                Invalid phone number
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Address</mat-label>
+              <textarea matInput formControlName="address" rows="3"></textarea>
+            </mat-form-field>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit" 
+              class="save-button"
+              [disabled]="profileForm.invalid || profileForm.pristine">
+              <mat-icon>save</mat-icon>
+              Save Changes
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Change Password Card -->
+      <mat-card class="profile-card">
+        <mat-card-content>
+          <div class="card-header">
+            <h2 class="card-title">
+              <mat-icon>lock</mat-icon>
+              Change Password
+            </h2>
+          </div>
+          
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Current Password</mat-label>
+              <input matInput type="password" formControlName="currentPassword">
+              <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                Current password is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>New Password</mat-label>
+              <input matInput type="password" formControlName="newPassword">
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                New password is required
+              </mat-error>
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                Password must be at least 6 characters
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm New Password</mat-label>
+              <input matInput type="password" formControlName="confirmPassword">
+              <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                Please confirm your password
+              </mat-error>
+            </mat-form-field>
+
+            <button 
+              mat-raised-button 
+              color="primary" 
+              type="submit" 
+              class="save-button"
+              [disabled]="passwordForm.invalid">
+              <mat-icon>vpn_key</mat-icon>
+              Update Password
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

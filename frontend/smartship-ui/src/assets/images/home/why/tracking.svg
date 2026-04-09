@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-label="Real-time tracking">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="0.55" stop-color="#2b3b54"/>
+      <stop offset="1" stop-color="#f39c12"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.10"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect width="1200" height="700" fill="url(#fade)"/>
+
+  <!-- Route path -->
+  <path d="M120 520 C 260 430, 420 610, 560 510 S 820 420, 980 520" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="16"/>
+  <path d="M120 520 C 260 430, 420 610, 560 510 S 820 420, 980 520" fill="none" stroke="#f39c12" stroke-opacity="0.28" stroke-width="8"/>
+
+  <!-- Pins -->
+  <g transform="translate(170 470)" opacity="0.9">
+    <path d="M50 10c-18 0-32 14-32 32 0 26 32 70 32 70s32-44 32-70c0-18-14-32-32-32Zm0 46a14 14 0 1 1 0-28 14 14 0 0 1 0 28Z" fill="#f39c12"/>
+  </g>
+  <g transform="translate(860 460)" opacity="0.8">
+    <path d="M50 10c-18 0-32 14-32 32 0 26 32 70 32 70s32-44 32-70c0-18-14-32-32-32Zm0 46a14 14 0 1 1 0-28 14 14 0 0 1 0 28Z" fill="#ffffff" opacity="0.28"/>
+  </g>
+
+  <!-- Dashboard card -->
+  <g transform="translate(140 140)" opacity="0.92">
+    <rect x="0" y="0" width="520" height="300" rx="26" fill="#ffffff" opacity="0.16"/>
+    <rect x="30" y="34" width="260" height="18" rx="9" fill="#ffffff" opacity="0.34"/>
+    <rect x="30" y="76" width="460" height="12" rx="6" fill="#ffffff" opacity="0.22"/>
+    <rect x="30" y="100" width="420" height="12" rx="6" fill="#ffffff" opacity="0.22"/>
+
+    <g>
+      <rect x="30" y="146" width="460" height="120" rx="18" fill="#ffffff" opacity="0.12"/>
+      <path d="M60 238 C 120 188, 190 270, 260 222 S 380 168, 450 220" fill="none" stroke="#f39c12" stroke-opacity="0.55" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="60" cy="238" r="8" fill="#ffffff" opacity="0.45"/>
+      <circle cx="260" cy="222" r="8" fill="#ffffff" opacity="0.45"/>
+      <circle cx="450" cy="220" r="8" fill="#ffffff" opacity="0.45"/>
+    </g>
+  </g>
+</svg>

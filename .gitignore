@@ -1,0 +1,46 @@
+# --- Do not commit sensitive/local config ---
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.Development.json
+!**/appsettings.example.json
+
+**/secrets.json
+**/*secrets*.json
+.env
+.env.*
+
+# Certificates / keys
+**/*.pfx
+**/*.p12
+**/*.pem
+**/*.key
+
+# --- Exclude requested folders/files ---
+diagrams/
+*.zip
+**/zip/
+**/zips/
+
+# --- .NET build artifacts ---
+**/bin/
+**/obj/
+**/logs/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+**/*.user
+**/*.suo
+**/*.cache
+**/*.csproj.user
+**/*.slnLaunch.user
+
+# --- Node/Angular artifacts ---
+**/node_modules/
+**/dist/
+**/.angular/
+**/.nx/
+
+# OS
+Thumbs.db
+.DS_Store

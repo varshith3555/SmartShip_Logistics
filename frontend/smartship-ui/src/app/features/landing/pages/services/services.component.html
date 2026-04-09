@@ -1,0 +1,121 @@
+<app-landing-navbar></app-landing-navbar>
+
+<div class="services-container">
+  <!-- Hero Section -->
+  <section class="services-hero">
+    <div class="hero-content">
+      <div class="hero-badge">PREMIUM LOGISTICS SOLUTIONS</div>
+      <h1 class="page-title">Tailored Services for Every Business Need</h1>
+      <p class="hero-subtitle">
+        Modern logistics powered by technology, designed for scale and built for performance.
+      </p>
+    </div>
+  </section>
+
+  <!-- Services Content -->
+  <section class="services-content">
+    <div class="content-wrapper">
+      
+      <!-- Service Tabs -->
+      <div class="tabs-grid" role="tablist" aria-label="Services">
+        <button
+          *ngFor="let tab of serviceTabs"
+          type="button"
+          class="tab-card"
+          role="tab"
+          [attr.aria-selected]="activeServiceId === tab.id"
+          [class.active]="activeServiceId === tab.id"
+          (click)="setActiveService(tab.id)"
+        >
+          <div class="tab-icon-wrapper">
+            <mat-icon>{{ tab.icon }}</mat-icon>
+          </div>
+          <div class="tab-content">
+            <div class="tab-title">{{ tab.title }}</div>
+            <div class="tab-indicator">
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Service Detail Card -->
+      <div class="service-detail-card">
+        <div class="detail-grid">
+          
+          <!-- Image Section -->
+          <div class="detail-media">
+            <div class="media-overlay"></div>
+            <img
+              [src]="activeService.imageSrc"
+              [alt]="activeService.imageAlt"
+              loading="lazy"
+              (error)="onDetailImageError($event)"
+            />
+            <div class="media-badge">
+              <mat-icon>{{ activeService.icon }}</mat-icon>
+            </div>
+          </div>
+
+          <!-- Content Section -->
+          <div class="detail-content">
+            <div class="content-header">
+              <h2 class="detail-title">{{ activeService.title }}</h2>
+              <p class="detail-description">{{ activeService.description }}</p>
+            </div>
+
+            <div class="content-sections">
+              <!-- Features -->
+              <div class="info-section">
+                <div class="section-header">
+                  <mat-icon class="section-icon">stars</mat-icon>
+                  <h3 class="section-title">Key Features</h3>
+                </div>
+                <ul class="info-list">
+                  <li *ngFor="let item of activeService.features">
+                    <div class="list-icon-wrapper">
+                      <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Benefits -->
+              <div class="info-section">
+                <div class="section-header">
+                  <mat-icon class="section-icon">trending_up</mat-icon>
+                  <h3 class="section-title">Business Benefits</h3>
+                </div>
+                <ul class="info-list">
+                  <li *ngFor="let item of activeService.benefits">
+                    <div class="list-icon-wrapper">
+                      <mat-icon>arrow_forward</mat-icon>
+                    </div>
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="cta-content">
+          <div class="cta-text">
+            <h2 class="cta-title">Ready to Transform Your Logistics?</h2>
+            <p class="cta-subtitle">Join thousands of businesses shipping smarter with SmartShip</p>
+          </div>
+          <button mat-raised-button color="primary" class="cta-button" (click)="getStarted()">
+            Get Started Free
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </section>
+</div>

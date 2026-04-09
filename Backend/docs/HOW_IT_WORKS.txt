@@ -1,0 +1,62 @@
+SMARTSHIP LOGISTICS — HOW IT WORKS (END-TO-END)
+
+1) Login + session
+1. User signs in from Angular UI.
+2. UI calls POST /gateway/auth/login.
+3. Gateway forwards to IdentityService /api/auth/login.
+4. IdentityService returns JWT + refresh token.
+5. UI stores tokens in sessionStorage (keys: smartship.accessToken, smartship.refreshToken).
+6. UI includes access token for protected calls (via its ApiClient/interceptor pattern).
+
+2) Create a shipment
+1. Customer fills shipment form in UI.
+2. UI calls Shipment APIs via /gateway/shipments/*.
+3. ShipmentService persists shipment state using EF Core + SQL Server.
+4. ShipmentService publishes integration event(s) via IEventBus (RabbitMQService):
+   - Exchange: smartship_events (direct)
+   - routingKey = event type name (e.g., ShipmentCreatedEvent)
+
+3) Tracking updates (event-driven)
+1. TrackingService runs TrackingEventConsumer (BackgroundService).
+2. On startup, it:
+   - ExchangeDeclare smartship_events (direct)
+   - QueueDeclare tracking_queue
+   - QueueBind tracking_queue to routing keys:
+     - ShipmentCreatedEvent
+     - ShipmentBookedEvent
+     - ShipmentDeliveredEvent
+     - TrackingUpdatedEvent
+3. When a message arrives:
+   - It reads ea.RoutingKey to decide which event to deserialize.
+   - For ShipmentCreatedEvent: creates/updates ShipmentStatus and adds a TrackingHistory entry.
+   - For TrackingUpdatedEvent: updates status and history using event payload fields.
+   - ACKs the message.
+
+4) Tracking lookup (read path)
+- Public/anonymous tracking views typically call /gateway/tracking/* (gateway forwards to TrackingService /api/*).
+- TrackingService can return current status + timeline/history for a tracking number.
+
+5) Document upload + retrieval
+1. User uploads a file (invoice/label/customs/general) from UI.
+2. UI calls DocumentService via gateway:
+   - POST /gateway/documents/upload
+   - POST /gateway/documents/upload-invoice
+   - POST /gateway/documents/upload-label
+   - POST /gateway/documents/upload-customs
+3. DocumentService stores metadata and writes the file to disk (implementation in IDocumentService).
+4. Files are served under /uploads/* by DocumentService.
+5. The gateway exposes those files through a clean /uploads/* upstream.
+
+6) Admin operations
+- Admin endpoints are reached via /gateway/admin/* (AdminService /api/*).
+- AdminService includes:
+  - dashboard metrics
+  - hubs/locations management
+  - reports
+  - exception workflows like resolve/delay/return
+
+7) Why this design
+- Gateway centralizes routing and makes the frontend’s API surface consistent.
+- Services own their data and logic.
+- RabbitMQ decouples shipment lifecycle events from tracking read models.
+- Shared Contracts reduce schema drift for integration events.

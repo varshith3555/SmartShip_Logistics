@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-label="AI-powered forecasting">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="0.55" stop-color="#24344c"/>
+      <stop offset="1" stop-color="#f39c12"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0.74"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect width="1200" height="700" fill="url(#fade)"/>
+
+  <!-- Neural grid -->
+  <g stroke="#ffffff" stroke-opacity="0.14" stroke-width="2">
+    <path d="M120 160H1080"/>
+    <path d="M120 240H1080"/>
+    <path d="M120 320H1080"/>
+    <path d="M120 400H1080"/>
+    <path d="M120 480H1080"/>
+
+    <path d="M220 120V560"/>
+    <path d="M380 120V560"/>
+    <path d="M540 120V560"/>
+    <path d="M700 120V560"/>
+    <path d="M860 120V560"/>
+    <path d="M1020 120V560"/>
+  </g>
+
+  <!-- Forecast card -->
+  <g transform="translate(160 160)" opacity="0.92">
+    <rect x="0" y="0" width="880" height="380" rx="28" fill="#ffffff" opacity="0.14"/>
+    <rect x="36" y="34" width="280" height="18" rx="9" fill="#ffffff" opacity="0.32"/>
+
+    <g>
+      <rect x="36" y="90" width="808" height="240" rx="22" fill="#ffffff" opacity="0.10"/>
+      <path d="M72 288 C 160 220, 240 310, 340 252 S 520 176, 620 232 S 760 290, 808 210" fill="none" stroke="#f39c12" stroke-opacity="0.70" stroke-width="12" stroke-linecap="round"/>
+      <path d="M72 288 C 160 220, 240 310, 340 252 S 520 176, 620 232 S 760 290, 808 210" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="22" stroke-linecap="round"/>
+
+      <g fill="#ffffff" opacity="0.28">
+        <circle cx="72" cy="288" r="8"/>
+        <circle cx="340" cy="252" r="8"/>
+        <circle cx="620" cy="232" r="8"/>
+        <circle cx="808" cy="210" r="8"/>
+      </g>
+    </g>
+
+    <!-- AI chip -->
+    <g transform="translate(700 28)">
+      <rect x="0" y="0" width="144" height="60" rx="18" fill="#f39c12" opacity="0.18"/>
+      <text x="72" y="38" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" fill="#ffffff" fill-opacity="0.70" font-weight="700">AI</text>
+    </g>
+  </g>
+</svg>
