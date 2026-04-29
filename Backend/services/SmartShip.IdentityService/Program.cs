@@ -9,12 +9,16 @@ using SmartShip.IdentityService.Services;
 using Serilog;
 using Microsoft.Extensions.Logging;
 using SmartShip.Core.Serialization;
+using SmartShip.Core.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var serilogEnabled = builder.Configuration.GetValue("Serilog:Enabled", true);
+
+var logDir = LogDirectory.Resolve(builder.Configuration);
+LogDirectory.MigrateLegacyBinLogs(logDir);
 
 // Configure Serilog (can be disabled via Serilog:Enabled=false)
 if (!serilogEnabled)
@@ -34,7 +38,7 @@ else
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Warning)
         .WriteTo.Console()
         .WriteTo.File(
-            path: "logs/identity-service-.txt",
+            path: Path.Combine(logDir, "identity-service-.txt"),
             rollingInterval: RollingInterval.Day,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
         .Enrich.WithProperty("Service", "IdentityService")

@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartShip.AdminService.Services;
 
+/// <summary>
+/// Default implementation of <see cref="IAdminService"/>.
+/// </summary>
 public class AdminService : IAdminService
 {
     private readonly IAdminRepository _repository;
@@ -120,4 +123,46 @@ public class AdminService : IAdminService
 
     public async Task<IEnumerable<Report>> GetAllReportsAsync() => await _repository.GetAllReportsAsync();
     public async Task<Report?> GetReportByTypeAsync(string type) => await _repository.GetReportByTypeAsync(type);
+
+    public async Task<Report> CreateReportAsync(Report report)
+    {
+        var created = await _repository.AddReportAsync(report);
+        _logger.LogInformation("Report created Type={ReportType} At={GeneratedAt}", created.ReportType, created.GeneratedAt);
+        return created;
+    }
+
+    public async Task ReportCustomerIssueAsync(Guid shipmentId, string message)
+    {
+        var normalizedMessage = (message ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(normalizedMessage))
+        {
+            normalizedMessage = "Customer reported an issue.";
+        }
+
+        // Keep the invariant: one OPEN exception record per shipment.
+        var ex = await _repository.GetExceptionByShipmentIdAsync(shipmentId);
+        if (ex == null)
+        {
+            ex = new ShipmentException
+            {
+                ExceptionId = Guid.NewGuid(),
+                ShipmentId = shipmentId,
+                Type = "CustomerIssue",
+                Description = $"Customer issue: {normalizedMessage}",
+                Status = "OPEN",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _repository.AddExceptionAsync(ex);
+            _logger.LogInformation("Customer issue created for ShipmentId {ShipmentId}", shipmentId);
+            return;
+        }
+
+        ex.Description = string.IsNullOrWhiteSpace(ex.Description)
+            ? $"Customer issue: {normalizedMessage}"
+            : $"{ex.Description} | Customer issue: {normalizedMessage}";
+
+        await _repository.UpdateExceptionAsync(ex);
+        _logger.LogInformation("Customer issue appended for ShipmentId {ShipmentId}", shipmentId);
+    }
 }

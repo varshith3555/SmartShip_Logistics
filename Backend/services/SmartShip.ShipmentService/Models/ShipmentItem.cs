@@ -1,5 +1,8 @@
 namespace SmartShip.ShipmentService.Models;
 
+/// <summary>
+/// Shipment item/package entity.
+/// </summary>
 public class ShipmentItem
 {
     public Guid ItemId { get; set; }

@@ -1,5 +1,8 @@
 namespace SmartShip.ShipmentService.Models;
 
+/// <summary>
+/// Address entity used for sender/receiver shipment addresses.
+/// </summary>
 public class Address
 {
     public Guid AddressId { get; set; }

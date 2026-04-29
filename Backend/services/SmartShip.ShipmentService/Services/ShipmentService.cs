@@ -5,6 +5,8 @@ using SmartShip.ShipmentService.DTOs;
 using SmartShip.ShipmentService.Models;
 using SmartShip.ShipmentService.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace SmartShip.ShipmentService.Services;
 
@@ -13,12 +15,27 @@ public class ShipmentService : IShipmentService
     private readonly IShipmentRepository _repository;
     private readonly IEventBus _eventBus;
     private readonly ILogger<ShipmentService> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public ShipmentService(IShipmentRepository repository, IEventBus eventBus, ILogger<ShipmentService> logger)
+    private const decimal BaseShipmentPrice = 30.0m;
+    private const decimal PricePerKg = 10.0m;
+    private const decimal RateQuoteSurcharge = 15.00m;
+
+    private static readonly HashSet<ShipmentStatus> HubRequiredStatuses = new()
+    {
+        ShipmentStatus.PICKED_UP,
+        ShipmentStatus.IN_TRANSIT,
+        ShipmentStatus.OUT_FOR_DELIVERY,
+        ShipmentStatus.DELAYED,
+        ShipmentStatus.DELIVERED,
+    };
+
+    public ShipmentService(IShipmentRepository repository, IEventBus eventBus, ILogger<ShipmentService> logger, IHttpClientFactory httpClientFactory)
     {
         _repository = repository;
         _eventBus = eventBus;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<Shipment> CreateShipmentAsync(Guid userId, CreateShipmentRequest request)
@@ -59,7 +76,7 @@ public class ShipmentService : IShipmentService
             ShipmentId = Guid.NewGuid(),
             UserId = userId,
             TrackingNumber = trackingNumber,
-            Status = "CREATED", // FIXED
+            Status = ShipmentStatus.DRAFT.ToString(),
             TotalWeight = totalWeight,
             Price = price,
             CreatedAt = DateTime.UtcNow,
@@ -94,19 +111,92 @@ public class ShipmentService : IShipmentService
         {
             ShipmentId = created.ShipmentId,
             TrackingNumber = created.TrackingNumber,
-            Status = "CREATED",
+            Status = created.Status,
             Location = "System",
-            Remarks = "Shipment Created"
+            Remarks = "Shipment Draft Created"
         });
 
         return created;
     }
 
-    public async Task<Shipment?> GetShipmentAsync(Guid id) => await _repository.GetByIdAsync(id);
+    public async Task BookShipmentAsync(Guid userId, Guid shipmentId)
+    {
+        var shipment = await _repository.GetByIdAsync(shipmentId) ?? throw new SmartShipNotFoundException("Shipment not found");
 
-    public async Task<IEnumerable<Shipment>> GetCustomerShipmentsAsync(Guid userId) => await _repository.GetByUserIdAsync(userId);
+        if (shipment.UserId != userId)
+        {
+            throw new SmartShipForbiddenException("You do not have access to this shipment");
+        }
 
-    public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync() => await _repository.GetAllAsync();
+        var current = NormalizeLegacyStatus(shipment.Status);
+        if (current != ShipmentStatus.DRAFT)
+        {
+            throw new SmartShipBadRequestException($"Shipment cannot be booked from status {shipment.Status}");
+        }
+
+        shipment.Status = ShipmentStatus.BOOKED.ToString();
+        await _repository.UpdateAsync(shipment);
+
+        _logger.LogInformation("Shipment {ShipmentId} booked by customer {UserId}", shipment.ShipmentId, userId);
+
+        _eventBus.Publish(new ShipmentBookedEvent
+        {
+            ShipmentId = shipment.ShipmentId,
+            TrackingNumber = shipment.TrackingNumber,
+            HubId = "HUB-MAIN"
+        });
+
+        // Choreography saga step: ask DocumentService to generate shipment label
+        _eventBus.Publish(new ShipmentBookingInitiatedEvent
+        {
+            ShipmentId = shipment.ShipmentId,
+            TrackingNumber = shipment.TrackingNumber,
+            CustomerId = shipment.UserId,
+            HubId = "HUB-MAIN"
+        });
+
+        _eventBus.Publish(new TrackingUpdatedEvent
+        {
+            ShipmentId = shipment.ShipmentId,
+            TrackingNumber = shipment.TrackingNumber,
+            Status = shipment.Status,
+            Location = "System",
+            Remarks = "Shipment Booked"
+        });
+    }
+
+    public async Task<Shipment?> GetShipmentAsync(Guid id)
+    {
+        var shipment = await _repository.GetByIdAsync(id);
+        if (shipment != null)
+        {
+            shipment.Price = CalculatePrice(shipment.TotalWeight);
+        }
+
+        return shipment;
+    }
+
+    public async Task<IEnumerable<Shipment>> GetCustomerShipmentsAsync(Guid userId)
+    {
+        var shipments = (await _repository.GetByUserIdAsync(userId)).ToList();
+        foreach (var shipment in shipments)
+        {
+            shipment.Price = CalculatePrice(shipment.TotalWeight);
+        }
+
+        return shipments;
+    }
+
+    public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync()
+    {
+        var shipments = (await _repository.GetAllAsync()).ToList();
+        foreach (var shipment in shipments)
+        {
+            shipment.Price = CalculatePrice(shipment.TotalWeight);
+        }
+
+        return shipments;
+    }
 
     public async Task UpdateShipmentStatusAsync(Guid id, UpdateShipmentStatusRequest request)
     {
@@ -124,6 +214,25 @@ public class ShipmentService : IShipmentService
             throw;
         }
 
+        string location = "System";
+        string remarks = "Status Updated";
+
+        if (HubRequiredStatuses.Contains(newStatus))
+        {
+            if (!request.HubId.HasValue)
+            {
+                throw new SmartShipBadRequestException($"HubId is required for status {newStatus}");
+            }
+
+            var hub = await GetHubSnapshotAsync(request.HubId.Value);
+            location = FormatHubLocation(hub);
+            remarks = newStatus == ShipmentStatus.DELIVERED
+                ? "Delivered"
+                : newStatus == ShipmentStatus.DELAYED
+                    ? "Delayed"
+                    : "Arrived at hub";
+        }
+
         shipment.Status = newStatus.ToString();
         await _repository.UpdateAsync(shipment);
 
@@ -135,6 +244,15 @@ public class ShipmentService : IShipmentService
             {
                 ShipmentId = shipment.ShipmentId,
                 TrackingNumber = shipment.TrackingNumber,
+                HubId = "HUB-MAIN"
+            });
+
+            // Choreography saga step: ask DocumentService to generate shipment label
+            _eventBus.Publish(new ShipmentBookingInitiatedEvent
+            {
+                ShipmentId = shipment.ShipmentId,
+                TrackingNumber = shipment.TrackingNumber,
+                CustomerId = shipment.UserId,
                 HubId = "HUB-MAIN"
             });
         }
@@ -153,9 +271,69 @@ public class ShipmentService : IShipmentService
             ShipmentId = shipment.ShipmentId,
             TrackingNumber = shipment.TrackingNumber,
             Status = shipment.Status,
-            Location = "System",
-            Remarks = "Status Updated"
+            Location = location,
+            Remarks = remarks
         });
+    }
+
+    private sealed class AdminHubSnapshot
+    {
+        public Guid HubId { get; set; }
+        public string HubName { get; set; } = string.Empty;
+        public AdminLocationSnapshot? Location { get; set; }
+    }
+
+    private sealed class AdminLocationSnapshot
+    {
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
+        public string Country { get; set; } = string.Empty;
+        public string Pincode { get; set; } = string.Empty;
+    }
+
+    private async Task<AdminHubSnapshot> GetHubSnapshotAsync(Guid hubId)
+    {
+        var client = _httpClientFactory.CreateClient("AdminService");
+        using var resp = await client.GetAsync($"api/hubs/{hubId}");
+
+        if (resp.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new SmartShipBadRequestException("Invalid hubId");
+        }
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("Hub lookup failed. Status={StatusCode}", (int)resp.StatusCode);
+            throw new SmartShipBadRequestException("Unable to validate hub at this time");
+        }
+
+        var hub = await resp.Content.ReadFromJsonAsync<AdminHubSnapshot>();
+        if (hub is null)
+        {
+            throw new SmartShipBadRequestException("Invalid hub response");
+        }
+
+        if (hub.Location is null)
+        {
+            throw new SmartShipBadRequestException("Hub location not found");
+        }
+
+        return hub;
+    }
+
+    private static string FormatHubLocation(AdminHubSnapshot hub)
+    {
+        var loc = hub.Location;
+        var city = (loc?.City ?? string.Empty).Trim();
+        var state = (loc?.State ?? string.Empty).Trim();
+        var country = (loc?.Country ?? string.Empty).Trim();
+        var pincode = (loc?.Pincode ?? string.Empty).Trim();
+
+        var place = string.Join(", ", new[] { city, state }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        var pin = string.IsNullOrWhiteSpace(pincode) ? "" : $" ({pincode})";
+        var countrySuffix = string.IsNullOrWhiteSpace(country) ? "" : $", {country}";
+
+        return $"{hub.HubName} — {place}{pin}{countrySuffix}".Trim();
     }
 
     public async Task SchedulePickupAsync(Guid id, SchedulePickupRequest request)
@@ -197,61 +375,70 @@ public class ShipmentService : IShipmentService
         var normalized = (status ?? string.Empty).Trim().ToUpperInvariant();
         normalized = normalized.Replace('-', '_').Replace(' ', '_');
 
+        // Backward-compat: legacy CREATED == new DRAFT
+        if (normalized == "CREATED") return ShipmentStatus.DRAFT;
+
         if (Enum.TryParse<ShipmentStatus>(normalized, ignoreCase: true, out var parsed))
         {
-            if (parsed == ShipmentStatus.CREATED)
-            {
-                throw new SmartShipBadRequestException("Status cannot be set to CREATED");
-            }
+            if (parsed == ShipmentStatus.DRAFT)
+                throw new SmartShipBadRequestException("Status cannot be set to DRAFT");
 
             return parsed;
         }
 
-        throw new SmartShipBadRequestException("Invalid status. Allowed: BOOKED, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, DELAYED, CANCELLED");
+        throw new SmartShipBadRequestException("Invalid status. Allowed: BOOKED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, DELAYED, FAILED, RETURNED, CANCELLED");
+    }
+
+    private static ShipmentStatus NormalizeLegacyStatus(string currentStatusRaw)
+    {
+        var normalized = (currentStatusRaw ?? string.Empty).Trim().ToUpperInvariant();
+        normalized = normalized.Replace('-', '_').Replace(' ', '_');
+
+        if (normalized == "CREATED") return ShipmentStatus.DRAFT;
+        if (normalized == "DRAFT") return ShipmentStatus.DRAFT;
+
+        if (Enum.TryParse<ShipmentStatus>(normalized, ignoreCase: true, out var current))
+        {
+            return current;
+        }
+
+        // Unknown legacy value: treat as BOOKED so admin can progress it.
+        return ShipmentStatus.BOOKED;
     }
 
     private static void ValidateStatusTransition(string currentStatusRaw, ShipmentStatus next)
     {
-        var currentNormalized = (currentStatusRaw ?? string.Empty).Trim().ToUpperInvariant();
-
-        // Keep it simple: allow if current is empty/unknown (legacy), otherwise enforce linear transitions
-        if (!Enum.TryParse<ShipmentStatus>(currentNormalized, ignoreCase: true, out var current))
-        {
-            return;
-        }
+        var current = NormalizeLegacyStatus(currentStatusRaw);
 
         // Terminal states
-        if (current == ShipmentStatus.CANCELLED)
+        if (current is ShipmentStatus.CANCELLED or ShipmentStatus.DELIVERED or ShipmentStatus.FAILED or ShipmentStatus.RETURNED)
         {
             throw new SmartShipBadRequestException($"Invalid status transition from {current} to {next}");
         }
 
-        // Allow DELAYED/CANCELLED as exceptional states from most non-terminal states
-        if (next == ShipmentStatus.DELAYED)
+        // Allow DELAYED/CANCELLED/FAILED/RETURNED as exceptional states from most non-terminal states
+        if (next is ShipmentStatus.DELAYED or ShipmentStatus.CANCELLED or ShipmentStatus.FAILED or ShipmentStatus.RETURNED)
         {
-            if (current == ShipmentStatus.DELIVERED)
-                throw new SmartShipBadRequestException($"Invalid status transition from {current} to {next}");
-            return;
-        }
-
-        if (next == ShipmentStatus.CANCELLED)
-        {
-            if (current == ShipmentStatus.DELIVERED)
-                throw new SmartShipBadRequestException($"Invalid status transition from {current} to {next}");
             return;
         }
 
         var order = new Dictionary<ShipmentStatus, int>
         {
-            { ShipmentStatus.CREATED, 0 },
+            { ShipmentStatus.DRAFT, 0 },
             { ShipmentStatus.BOOKED, 1 },
-            { ShipmentStatus.IN_TRANSIT, 2 },
-            { ShipmentStatus.OUT_FOR_DELIVERY, 3 },
-            { ShipmentStatus.DELIVERED, 4 }
+            { ShipmentStatus.PICKED_UP, 2 },
+            { ShipmentStatus.IN_TRANSIT, 3 },
+            { ShipmentStatus.OUT_FOR_DELIVERY, 4 },
+            { ShipmentStatus.DELIVERED, 5 }
         };
 
-        // If a shipment is currently DELAYED, allow resuming normal flow based on its previous stage.
+        // If a shipment is currently DELAYED, allow resuming normal flow.
         if (current == ShipmentStatus.DELAYED)
+        {
+            return;
+        }
+
+        if (!order.ContainsKey(current) || !order.ContainsKey(next))
         {
             return;
         }
@@ -270,7 +457,7 @@ public class ShipmentService : IShipmentService
 
     private decimal CalculatePrice(decimal weight)
     {
-        return 10.0m + (weight * 2.5m);
+        return BaseShipmentPrice + (weight * PricePerKg);
     }
 
     public async Task UpdateShipmentAsync(Guid id, UpdateShipmentRequest request)
@@ -341,7 +528,7 @@ public class ShipmentService : IShipmentService
     {
         return new CalculateRateResponse
         {
-            EstimatedPrice = CalculatePrice(request.TotalWeight) + 5.00m
+            EstimatedPrice = CalculatePrice(request.TotalWeight) + RateQuoteSurcharge
         };
     }
 
@@ -349,9 +536,9 @@ public class ShipmentService : IShipmentService
     {
         return new List<ServiceTypeDto>
         {
-            new ServiceTypeDto { ServiceName = "Standard", Description = "5-7 business days", BasePrice = 10.0m },
-            new ServiceTypeDto { ServiceName = "Express", Description = "2-3 business days", BasePrice = 25.0m },
-            new ServiceTypeDto { ServiceName = "Overnight", Description = "Next business day", BasePrice = 50.0m }
+            new ServiceTypeDto { ServiceName = "Standard", Description = "5-7 business days", BasePrice = 30.0m },
+            new ServiceTypeDto { ServiceName = "Express", Description = "2-3 business days", BasePrice = 75.0m },
+            new ServiceTypeDto { ServiceName = "Overnight", Description = "Next business day", BasePrice = 150.0m }
         };
     }
 }

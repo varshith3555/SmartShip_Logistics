@@ -2,6 +2,9 @@ using SmartShip.IdentityService.DTOs;
 
 namespace SmartShip.IdentityService.Services;
 
+/// <summary>
+/// Authentication service abstraction for login/signup/OTP/password reset flows.
+/// </summary>
 public interface IAuthService
 {
     Task<AuthResponse> LoginAsync(LoginRequest request);

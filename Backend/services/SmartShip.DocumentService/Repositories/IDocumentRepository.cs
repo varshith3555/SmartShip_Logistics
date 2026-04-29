@@ -2,6 +2,9 @@ using SmartShip.DocumentService.Models;
 
 namespace SmartShip.DocumentService.Repositories;
 
+/// <summary>
+/// Data-access abstraction for documents and delivery proofs.
+/// </summary>
 public interface IDocumentRepository
 {
     Task<Document> AddDocumentAsync(Document document);

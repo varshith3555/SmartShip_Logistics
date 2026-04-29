@@ -3,6 +3,9 @@ using SmartShip.AdminService.Models;
 
 namespace SmartShip.AdminService.Services;
 
+/// <summary>
+/// Business logic abstraction for admin operations (hubs, locations, exceptions, reports).
+/// </summary>
 public interface IAdminService
 {
     Task<Hub> CreateHubAsync(HubDto hubDto);
@@ -26,4 +29,8 @@ public interface IAdminService
 
     Task<IEnumerable<Report>> GetAllReportsAsync();
     Task<Report?> GetReportByTypeAsync(string type);
+
+    Task<Report> CreateReportAsync(Report report);
+
+    Task ReportCustomerIssueAsync(Guid shipmentId, string message);
 }

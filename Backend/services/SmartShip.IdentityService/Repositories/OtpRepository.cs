@@ -4,6 +4,9 @@ using SmartShip.IdentityService.Models;
 
 namespace SmartShip.IdentityService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IOtpRepository"/>.
+/// </summary>
 public class OtpRepository : IOtpRepository
 {
     private readonly IdentityDbContext _context;

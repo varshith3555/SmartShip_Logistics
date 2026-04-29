@@ -1,5 +1,8 @@
 namespace SmartShip.ShipmentService.Models;
 
+/// <summary>
+/// Shipment aggregate root containing addresses, items, pickup details, and status.
+/// </summary>
 public class Shipment
 {
     public Guid ShipmentId { get; set; }
@@ -17,5 +20,4 @@ public class Shipment
     public Address ReceiverAddress { get; set; } = null!;
     public ICollection<ShipmentItem> Items { get; set; } = new List<ShipmentItem>();
     public PickupDetails? PickupDetails { get; set; }
-    public Payment? Payment { get; set; }
 }

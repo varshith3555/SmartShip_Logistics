@@ -4,6 +4,9 @@ using SmartShip.AdminService.Models;
 
 namespace SmartShip.AdminService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IAdminRepository"/>.
+/// </summary>
 public class AdminRepository : IAdminRepository
 {
     private readonly AdminDbContext _context;
@@ -98,4 +101,11 @@ public class AdminRepository : IAdminRepository
 
     public async Task<IEnumerable<Report>> GetAllReportsAsync() => await _context.Reports.ToListAsync();
     public async Task<Report?> GetReportByTypeAsync(string type) => await _context.Reports.OrderByDescending(r => r.GeneratedAt).FirstOrDefaultAsync(r => r.ReportType == type);
+
+    public async Task<Report> AddReportAsync(Report report)
+    {
+        _context.Reports.Add(report);
+        await _context.SaveChangesAsync();
+        return report;
+    }
 }

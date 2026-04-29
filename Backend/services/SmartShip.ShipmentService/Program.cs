@@ -92,6 +92,14 @@ try
     builder.Services.AddScoped<IShipmentRepository, ShipmentRepository>();
     builder.Services.AddScoped<IShipmentService, SmartShip.ShipmentService.Services.ShipmentService>();
 
+    var adminServiceBaseUrl = builder.Configuration["DownstreamServices:AdminServiceBaseUrl"]
+        ?? "http://localhost:5005";
+
+    builder.Services.AddHttpClient("AdminService", client =>
+    {
+        client.BaseAddress = new Uri(adminServiceBaseUrl.TrimEnd('/') + "/");
+    });
+
     builder.Services.AddSingleton<IEventBus, RabbitMQService>();
 
     builder.Services.AddJwtAuthentication(builder.Configuration);

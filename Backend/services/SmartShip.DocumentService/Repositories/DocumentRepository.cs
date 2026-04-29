@@ -4,6 +4,9 @@ using SmartShip.DocumentService.Models;
 
 namespace SmartShip.DocumentService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IDocumentRepository"/>.
+/// </summary>
 public class DocumentRepository : IDocumentRepository
 {
     private readonly DocumentDbContext _context;

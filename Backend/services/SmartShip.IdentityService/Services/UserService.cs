@@ -6,6 +6,9 @@ using SmartShip.Core.Exceptions;
 
 namespace SmartShip.IdentityService.Services;
 
+/// <summary>
+/// Default implementation of <see cref="IUserService"/>.
+/// </summary>
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;

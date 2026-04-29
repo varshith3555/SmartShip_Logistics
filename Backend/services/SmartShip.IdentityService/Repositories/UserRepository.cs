@@ -4,6 +4,9 @@ using SmartShip.IdentityService.Models;
 
 namespace SmartShip.IdentityService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IUserRepository"/>.
+/// </summary>
 public class UserRepository : IUserRepository
 {
     private readonly IdentityDbContext _context;

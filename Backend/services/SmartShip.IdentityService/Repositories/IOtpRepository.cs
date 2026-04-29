@@ -4,6 +4,9 @@ using SmartShip.IdentityService.Models;
 
 public interface IOtpRepository
 {
+    /// <summary>
+    /// Gets an OTP verification record for an email (latest by default).
+    /// </summary>
     Task<OtpVerification?> GetOtpByEmailAsync(string email);
     Task<OtpVerification?> GetLatestOtpByEmailAsync(string email);
     Task<OtpVerification?> GetActiveOtpByEmailAsync(string email);

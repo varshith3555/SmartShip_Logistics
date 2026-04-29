@@ -1,5 +1,8 @@
 namespace SmartShip.TrackingService.Models;
 
+/// <summary>
+/// Persistent tracking event/history record.
+/// </summary>
 public class TrackingHistory
 {
     public Guid TrackingId { get; set; }

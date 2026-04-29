@@ -2,6 +2,9 @@ using SmartShip.ShipmentService.Models;
 
 namespace SmartShip.ShipmentService.Repositories;
 
+/// <summary>
+/// Data-access abstraction for <see cref="Shipment"/> and related entities.
+/// </summary>
 public interface IShipmentRepository
 {
     Task<Shipment?> GetByIdAsync(Guid id);

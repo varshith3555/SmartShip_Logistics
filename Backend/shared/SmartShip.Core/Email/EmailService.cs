@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartShip.Core.Email;
 
+/// <summary>
+/// SMTP-based email sender used for OTP and password reset flows.
+/// </summary>
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
@@ -19,6 +22,9 @@ public class EmailService : IEmailService
         _configuration.GetSection("EmailSettings").Bind(_emailSettings);
     }
 
+    /// <summary>
+    /// Sends an OTP email for verification.
+    /// </summary>
     public async Task<bool> SendOtpEmailAsync(string recipientEmail, string otp)
     {
         try
@@ -40,6 +46,9 @@ public class EmailService : IEmailService
         }
     }
 
+    /// <summary>
+    /// Sends an OTP email for password reset.
+    /// </summary>
     public async Task<bool> SendPasswordResetEmailAsync(string recipientEmail, string otp)
     {
         try
@@ -93,6 +102,9 @@ public class EmailService : IEmailService
     }
 }
 
+/// <summary>
+/// Configuration model for SMTP email settings.
+/// </summary>
 public class EmailSettings
 {
     public string SmtpHost { get; set; } = "smtp.gmail.com";

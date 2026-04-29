@@ -3,9 +3,13 @@ using SmartShip.ShipmentService.Models;
 
 namespace SmartShip.ShipmentService.Services;
 
+/// <summary>
+/// Business logic abstraction for shipment lifecycle operations.
+/// </summary>
 public interface IShipmentService
 {
     Task<Shipment> CreateShipmentAsync(Guid userId, CreateShipmentRequest request);
+    Task BookShipmentAsync(Guid userId, Guid shipmentId);
     Task<Shipment?> GetShipmentAsync(Guid id);
     Task<IEnumerable<Shipment>> GetCustomerShipmentsAsync(Guid userId);
     Task<IEnumerable<Shipment>> GetAllShipmentsAsync();

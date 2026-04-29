@@ -1,5 +1,8 @@
 namespace SmartShip.IdentityService.Services;
 
+/// <summary>
+/// OTP helper service abstraction (generate/hash/verify and email delivery).
+/// </summary>
 public interface IOtpService
 {
     string GenerateOtp();

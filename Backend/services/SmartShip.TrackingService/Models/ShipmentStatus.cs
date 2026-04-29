@@ -1,5 +1,8 @@
 namespace SmartShip.TrackingService.Models;
 
+/// <summary>
+/// Current status snapshot for a shipment tracking number.
+/// </summary>
 public class ShipmentStatus
 {
     public Guid Id { get; set; }

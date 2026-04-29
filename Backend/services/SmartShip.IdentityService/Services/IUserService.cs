@@ -2,6 +2,9 @@ using SmartShip.IdentityService.DTOs;
 
 namespace SmartShip.IdentityService.Services;
 
+/// <summary>
+/// User service abstraction for profile management and admin user operations.
+/// </summary>
 public interface IUserService
 {
     Task<UserDto> GetProfileAsync(Guid userId);

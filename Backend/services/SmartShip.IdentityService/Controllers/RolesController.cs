@@ -8,6 +8,9 @@ namespace SmartShip.IdentityService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "ADMIN")]
+/// <summary>
+/// Admin-only role API (static roles in this project).
+/// </summary>
 public class RolesController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -17,6 +20,9 @@ public class RolesController : ControllerBase
         _userService = userService;
     }
 
+    /// <summary>
+    /// Gets the list of available roles.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetRoles()
     {

@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace SmartShip.DocumentService.Services;
 
+/// <summary>
+/// Default implementation of <see cref="IDocumentService"/> that stores files under wwwroot/uploads and persists metadata.
+/// </summary>
 public class DocumentService : IDocumentService
 {
     private readonly IDocumentRepository _repository;

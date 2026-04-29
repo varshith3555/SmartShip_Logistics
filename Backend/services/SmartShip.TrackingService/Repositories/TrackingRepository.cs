@@ -4,6 +4,9 @@ using SmartShip.TrackingService.Models;
 
 namespace SmartShip.TrackingService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="ITrackingRepository"/>.
+/// </summary>
 public class TrackingRepository : ITrackingRepository
 {
     private readonly TrackingDbContext _context;

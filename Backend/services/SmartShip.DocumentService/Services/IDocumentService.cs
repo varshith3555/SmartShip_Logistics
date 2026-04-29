@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace SmartShip.DocumentService.Services;
 
+/// <summary>
+/// Business logic abstraction for uploading and managing shipment documents.
+/// </summary>
 public interface IDocumentService
 {
     Task<Document> UploadDocumentAsync(Guid shipmentId, Guid customerId, IFormFile file, string fileType);

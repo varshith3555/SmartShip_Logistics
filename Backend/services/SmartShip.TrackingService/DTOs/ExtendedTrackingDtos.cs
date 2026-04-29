@@ -2,6 +2,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SmartShip.TrackingService.DTOs;
 
+/// <summary>
+/// Request payload for creating a new tracking event.
+/// </summary>
 public class CreateTrackingEventRequest
 {
     [Required]
@@ -13,6 +16,9 @@ public class CreateTrackingEventRequest
     public string Remarks { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Request payload for updating an existing tracking event.
+/// </summary>
 public class UpdateTrackingEventRequest
 {
     [Required]
@@ -22,6 +28,9 @@ public class UpdateTrackingEventRequest
     public string Remarks { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Request payload for posting a location update for a tracking number.
+/// </summary>
 public class PostLocationRequest
 {
     [Required]
@@ -30,6 +39,9 @@ public class PostLocationRequest
     public string CurrentLocation { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Request payload for changing the current shipment status.
+/// </summary>
 public class UpdateStatusRequest
 {
     [Required]

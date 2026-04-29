@@ -8,10 +8,14 @@ using SmartShip.DocumentService.Services;
 using Serilog;
 using Microsoft.Extensions.Logging;
 using SmartShip.Core.Serialization;
+using SmartShip.Core.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var serilogEnabled = builder.Configuration.GetValue("Serilog:Enabled", true);
+
+var logDir = LogDirectory.Resolve(builder.Configuration);
+LogDirectory.MigrateLegacyBinLogs(logDir);
 
 // Configure Serilog (can be disabled via Serilog:Enabled=false)
 if (!serilogEnabled)
@@ -31,7 +35,7 @@ else
         .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Warning)
         .WriteTo.Console()
         .WriteTo.File(
-            path: "logs/document-service-.txt",
+            path: Path.Combine(logDir, "document-service-.txt"),
             rollingInterval: RollingInterval.Day,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
         .Enrich.WithProperty("Service", "DocumentService")
@@ -89,6 +93,9 @@ builder.Services.AddDbContext<DocumentDbContext>(options =>
 
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentService, SmartShip.DocumentService.Services.DocumentService>();
+
+// Choreography-based saga participant
+builder.Services.AddHostedService<ShipmentBookingSagaConsumer>();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
 

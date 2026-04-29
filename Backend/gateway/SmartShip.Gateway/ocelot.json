@@ -40,6 +40,19 @@
       "SwaggerKey": "identity"
     },
     {
+      "DownstreamPathTemplate": "/api/Profile",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/identity/profile",
+      "UpstreamHttpMethod": [ "GET", "PUT", "OPTIONS" ],
+      "SwaggerKey": "identity"
+    },
+    {
       "DownstreamPathTemplate": "/api/Profile/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -49,6 +62,19 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/identity/Profile/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "SwaggerKey": "identity"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Profile/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/identity/profile/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
       "SwaggerKey": "identity"
     },
@@ -131,6 +157,19 @@
       "SwaggerKey": "shipments"
     },
     {
+      "DownstreamPathTemplate": "/api/shipments",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/shipments",
+      "UpstreamHttpMethod": [ "GET", "POST", "OPTIONS" ],
+      "SwaggerKey": "shipments"
+    },
+    {
       "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -168,6 +207,19 @@
       "UpstreamPathTemplate": "/uploads/{everything}",
       "UpstreamHttpMethod": [ "GET", "OPTIONS" ],
       "SwaggerKey": "documents"
+    },
+    {
+      "DownstreamPathTemplate": "/api/support/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5005
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/support/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ],
+      "SwaggerKey": "admin"
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",

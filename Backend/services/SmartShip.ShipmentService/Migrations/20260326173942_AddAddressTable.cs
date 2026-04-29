@@ -62,27 +62,6 @@ namespace SmartShip.ShipmentService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    PaymentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ShipmentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
-                    table.ForeignKey(
-                        name: "FK_Payments_Shipments_ShipmentId",
-                        column: x => x.ShipmentId,
-                        principalTable: "Shipments",
-                        principalColumn: "ShipmentId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PickupDetails",
                 columns: table => new
                 {
@@ -124,12 +103,6 @@ namespace SmartShip.ShipmentService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_ShipmentId",
-                table: "Payments",
-                column: "ShipmentId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PickupDetails_ShipmentId",
                 table: "PickupDetails",
                 column: "ShipmentId",
@@ -160,9 +133,6 @@ namespace SmartShip.ShipmentService.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Payments");
-
             migrationBuilder.DropTable(
                 name: "PickupDetails");
 

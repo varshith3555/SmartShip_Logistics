@@ -14,7 +14,8 @@ public class SignupWithOtpRequest
     public string Email { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Phone is required")]
-    [Phone(ErrorMessage = "Invalid phone number")]
+    [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone must be 10 digits")]
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone must be 10 digits")]
     public string Phone { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Password is required")]

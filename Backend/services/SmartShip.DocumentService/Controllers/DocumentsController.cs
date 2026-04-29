@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartShip.DocumentService.Services;
@@ -23,13 +24,37 @@ public class DocumentsController : ControllerBase
         return claim != null ? Guid.Parse(claim) : Guid.Empty;
     }
 
-    // COMMON VALIDATION METHOD
-    private IActionResult ValidateFile(IFormFile file)
+    private static readonly HashSet<string> AllowedDocumentExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".pdf",
+        ".png",
+        ".jpg",
+        ".jpeg",
+    };
+
+    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png",
+        ".jpg",
+        ".jpeg",
+    };
+
+    private const long MaxDocumentBytes = 10 * 1024 * 1024; // 10 MB
+    private const long MaxImageBytes = 5 * 1024 * 1024;     // 5 MB
+
+    private IActionResult? ValidateFile(IFormFile? file, HashSet<string> allowedExtensions, long maxBytes)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file provided");
 
-        return null!;
+        if (file.Length > maxBytes)
+            return BadRequest($"File too large. Max allowed is {maxBytes / (1024 * 1024)}MB");
+
+        var ext = Path.GetExtension(file.FileName ?? string.Empty);
+        if (string.IsNullOrWhiteSpace(ext) || !allowedExtensions.Contains(ext))
+            return BadRequest("Invalid file type. Allowed: PDF, PNG, JPG, JPEG");
+
+        return null;
     }
 
     // GENERIC UPLOAD
@@ -37,7 +62,7 @@ public class DocumentsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadDocument([FromForm] Guid shipmentId, IFormFile file)
     {
-        var validation = ValidateFile(file);
+        var validation = ValidateFile(file, AllowedDocumentExtensions, MaxDocumentBytes);
         if (validation != null) return validation;
 
         var doc = await _documentService.UploadDocumentAsync(shipmentId, GetUserId(), file, "General");
@@ -48,7 +73,7 @@ public class DocumentsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadInvoice([FromForm] Guid shipmentId, IFormFile file)
     {
-        var validation = ValidateFile(file);
+        var validation = ValidateFile(file, AllowedDocumentExtensions, MaxDocumentBytes);
         if (validation != null) return validation;
 
         var doc = await _documentService.UploadDocumentAsync(shipmentId, GetUserId(), file, "Invoice");
@@ -59,7 +84,7 @@ public class DocumentsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadLabel([FromForm] Guid shipmentId, IFormFile file)
     {
-        var validation = ValidateFile(file);
+        var validation = ValidateFile(file, AllowedDocumentExtensions, MaxDocumentBytes);
         if (validation != null) return validation;
 
         var doc = await _documentService.UploadDocumentAsync(shipmentId, GetUserId(), file, "Label");
@@ -70,7 +95,7 @@ public class DocumentsController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadCustoms([FromForm] Guid shipmentId, IFormFile file)
     {
-        var validation = ValidateFile(file);
+        var validation = ValidateFile(file, AllowedDocumentExtensions, MaxDocumentBytes);
         if (validation != null) return validation;
 
         var doc = await _documentService.UploadDocumentAsync(shipmentId, GetUserId(), file, "Customs");
@@ -131,8 +156,11 @@ public class DocumentsController : ControllerBase
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> UploadDeliveryProof(Guid shipmentId, IFormFile image, IFormFile signature)
     {
-        if (image == null || signature == null)
-            return BadRequest("Missing image or signature");
+        var imageValidation = ValidateFile(image, AllowedImageExtensions, MaxImageBytes);
+        if (imageValidation != null) return imageValidation;
+
+        var signatureValidation = ValidateFile(signature, AllowedImageExtensions, MaxImageBytes);
+        if (signatureValidation != null) return signatureValidation;
 
         var proof = await _documentService.UploadDeliveryProofAsync(shipmentId, image, signature);
         return Ok(proof);

@@ -1,5 +1,8 @@
 namespace SmartShip.AdminService.Models;
 
+/// <summary>
+/// Persisted report record storing generated metrics as JSON.
+/// </summary>
 public class Report
 {
     public Guid ReportId { get; set; }

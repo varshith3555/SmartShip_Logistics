@@ -1,5 +1,8 @@
 namespace SmartShip.IdentityService.Models;
 
+/// <summary>
+/// Refresh token entity persisted for token renewal flows.
+/// </summary>
 public class RefreshToken
 {
     public Guid TokenId { get; set; }

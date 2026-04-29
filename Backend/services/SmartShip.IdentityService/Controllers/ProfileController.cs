@@ -9,6 +9,9 @@ namespace SmartShip.IdentityService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+/// <summary>
+/// Profile API for authenticated users to view and update their own profile details.
+/// </summary>
 public class ProfileController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -24,6 +27,9 @@ public class ProfileController : ControllerBase
         return Guid.TryParse(idStr, out var id) ? id : Guid.Empty;
     }
 
+    /// <summary>
+    /// Gets the current user's profile.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {
@@ -32,6 +38,9 @@ public class ProfileController : ControllerBase
         return Ok(profile);
     }
 
+    /// <summary>
+    /// Updates the current user's basic profile fields.
+    /// </summary>
     [HttpPut]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
@@ -40,6 +49,9 @@ public class ProfileController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Changes the current user's password.
+    /// </summary>
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {

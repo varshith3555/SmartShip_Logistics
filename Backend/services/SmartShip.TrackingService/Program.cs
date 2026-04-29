@@ -6,11 +6,15 @@ using SmartShip.TrackingService.Data;
 using SmartShip.TrackingService.Repositories;
 using SmartShip.TrackingService.Services;
 using Serilog;
+using SmartShip.Core.Logging;
 using SmartShip.Core.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var serilogEnabled = builder.Configuration.GetValue("Serilog:Enabled", true);
+
+var logDir = LogDirectory.Resolve(builder.Configuration);
+LogDirectory.MigrateLegacyBinLogs(logDir);
 
 // Configure Serilog (can be disabled via Serilog:Enabled=false)
 if (!serilogEnabled)
@@ -29,7 +33,7 @@ else
         .MinimumLevel.Information()
         .WriteTo.Console()
         .WriteTo.File(
-            path: "logs/tracking-service-.txt",
+            path: Path.Combine(logDir, "tracking-service-.txt"),
             rollingInterval: RollingInterval.Day,
             outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
         .Enrich.WithProperty("Service", "TrackingService")

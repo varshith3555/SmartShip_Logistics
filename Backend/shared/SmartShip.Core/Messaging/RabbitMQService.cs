@@ -6,6 +6,9 @@ using SmartShip.Contracts.Events;
 
 namespace SmartShip.Core.Messaging;
 
+/// <summary>
+/// RabbitMQ-based implementation of <see cref="IEventBus"/>.
+/// </summary>
 public class RabbitMQService : IEventBus, IDisposable
 {
     private readonly IConnection _connection;
@@ -23,6 +26,9 @@ public class RabbitMQService : IEventBus, IDisposable
         _channel = _connection.CreateModel();
     }
 
+    /// <summary>
+    /// Publishes an event to the <c>smartship_events</c> direct exchange using the event type name as routing key.
+    /// </summary>
     public void Publish(IntegrationEvent @event)
     {
         var eventName = @event.GetType().Name;
@@ -37,6 +43,9 @@ public class RabbitMQService : IEventBus, IDisposable
             body: body);
     }
 
+    /// <summary>
+    /// Creates a new RabbitMQ channel from the underlying connection.
+    /// </summary>
     public IModel CreateChannel()
     {
         return _connection.CreateModel();

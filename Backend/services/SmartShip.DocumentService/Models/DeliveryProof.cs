@@ -1,5 +1,8 @@
 namespace SmartShip.DocumentService.Models;
 
+/// <summary>
+/// Proof-of-delivery record containing image/signature artifacts.
+/// </summary>
 public class DeliveryProof
 {
     public Guid ProofId { get; set; }

@@ -2,6 +2,9 @@ using SmartShip.TrackingService.Models;
 
 namespace SmartShip.TrackingService.Repositories;
 
+/// <summary>
+/// Data-access abstraction for tracking status snapshots and history records.
+/// </summary>
 public interface ITrackingRepository
 {
     Task<ShipmentStatus?> GetStatusAsync(string trackingNumber);

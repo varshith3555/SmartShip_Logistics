@@ -3,6 +3,9 @@ using Microsoft.Extensions.Primitives;
 
 namespace SmartShip.Gateway.Correlation;
 
+/// <summary>
+/// Middleware that ensures every request/response carries a correlation ID.
+/// </summary>
 public sealed class CorrelationIdMiddleware
 {
     private readonly RequestDelegate _next;
@@ -12,6 +15,9 @@ public sealed class CorrelationIdMiddleware
         _next = next;
     }
 
+    /// <summary>
+    /// Gets or creates a correlation ID for the request, then propagates it via headers and <see cref="HttpContext.Items"/>.
+    /// </summary>
     public async Task InvokeAsync(HttpContext context)
     {
         var correlationId = GetOrCreateCorrelationId(context);

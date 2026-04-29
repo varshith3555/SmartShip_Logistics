@@ -10,6 +10,7 @@ using SmartShip.Core.Serialization;
 using Serilog;
 using Microsoft.Extensions.Logging;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 var serilogEnabled = builder.Configuration.GetValue("Serilog:Enabled", true);
@@ -53,6 +54,16 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new UtcDateTimeJsonConverter());
     });
+
+builder.Services.AddHttpContextAccessor();
+
+var shipmentServiceBaseUrl = builder.Configuration["DownstreamServices:ShipmentServiceBaseUrl"]
+    ?? "http://localhost:5002";
+
+builder.Services.AddHttpClient("ShipmentService", client =>
+{
+    client.BaseAddress = new Uri(shipmentServiceBaseUrl.TrimEnd('/') + "/");
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -91,6 +102,9 @@ builder.Services.AddDbContext<AdminDbContext>(options =>
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAdminService, SmartShip.AdminService.Services.AdminService>();
 
+// Choreography-saga participant: reacts to downstream failures
+builder.Services.AddHostedService<ShipmentLabelFailureConsumer>();
+
 builder.Services.AddSingleton<IEventBus, RabbitMQService>();
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -118,6 +132,15 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AdminDbContext>();
     db.Database.Migrate();
+
+    try
+    {
+        AdminDbSeeder.Seed(db);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Admin DB seeding failed");
+    }
 }
 
 Log.Information("SmartShip.AdminService is starting");

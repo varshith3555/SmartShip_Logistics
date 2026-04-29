@@ -11,7 +11,6 @@ public class ShipmentDbContext : DbContext
     public DbSet<ShipmentItem> ShipmentItems { get; set; }
     public DbSet<Address> Addresses { get; set; }
     public DbSet<PickupDetails> PickupDetails { get; set; }
-    public DbSet<Payment> Payments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,7 +21,6 @@ public class ShipmentDbContext : DbContext
         modelBuilder.Entity<ShipmentItem>().HasKey(i => i.ItemId);
         modelBuilder.Entity<Address>().HasKey(a => a.AddressId);
         modelBuilder.Entity<PickupDetails>().HasKey(p => p.PickupId);   // FIX
-        modelBuilder.Entity<Payment>().HasKey(p => p.PaymentId);
 
         // Unique tracking number
         modelBuilder.Entity<Shipment>()
@@ -40,10 +38,6 @@ public class ShipmentDbContext : DbContext
 
         modelBuilder.Entity<ShipmentItem>()
             .Property(x => x.Weight)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Payment>()
-            .Property(x => x.Amount)
             .HasPrecision(18, 2);
 
         // Sender Address
@@ -72,13 +66,6 @@ public class ShipmentDbContext : DbContext
             .HasOne(s => s.PickupDetails)
             .WithOne(p => p.Shipment)
             .HasForeignKey<PickupDetails>(p => p.ShipmentId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        // Payment (1-1)
-        modelBuilder.Entity<Shipment>()
-            .HasOne(s => s.Payment)
-            .WithOne(p => p.Shipment)
-            .HasForeignKey<Payment>(p => p.ShipmentId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

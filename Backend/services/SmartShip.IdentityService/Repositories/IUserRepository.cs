@@ -2,6 +2,9 @@ using SmartShip.IdentityService.Models;
 
 namespace SmartShip.IdentityService.Repositories;
 
+/// <summary>
+/// Data-access abstraction for users and refresh tokens.
+/// </summary>
 public interface IUserRepository
 {
     Task<User?> GetUserByEmailAsync(string email);

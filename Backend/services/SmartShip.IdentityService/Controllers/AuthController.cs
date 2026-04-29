@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
         _schemeProvider = schemeProvider;
     }
 
-    /// <summary>
+    /// <summary> 
     /// User login with email and password
     /// </summary>
     /// <param name="request">Login credentials</param>

@@ -1,5 +1,8 @@
 namespace SmartShip.AdminService.Models;
 
+/// <summary>
+/// Tracks shipment exceptions (delay/return/etc.) and their resolution status.
+/// </summary>
 public class ShipmentException
 {
     public Guid ExceptionId { get; set; }

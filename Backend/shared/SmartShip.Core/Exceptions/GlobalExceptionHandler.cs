@@ -7,6 +7,9 @@ using SmartShip.Core.Correlation;
 
 namespace SmartShip.Core.Exceptions;
 
+/// <summary>
+/// ASP.NET Core middleware that catches unhandled exceptions and returns a consistent JSON error payload.
+/// </summary>
 public class GlobalExceptionHandler
 {
     private readonly RequestDelegate _next;
@@ -18,6 +21,9 @@ public class GlobalExceptionHandler
         _logger = logger;
     }
 
+    /// <summary>
+    /// Invokes the next middleware and handles any exceptions thrown.
+    /// </summary>
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try

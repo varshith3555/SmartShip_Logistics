@@ -9,6 +9,9 @@ namespace SmartShip.ShipmentService.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+/// <summary>
+/// Shipments API for customers/admins to create, book, and manage shipments.
+/// </summary>
 public class ShipmentsController : ControllerBase
 {
     private readonly IShipmentService _shipmentService;
@@ -20,6 +23,9 @@ public class ShipmentsController : ControllerBase
 
     private Guid GetUserId() => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+    /// <summary>
+    /// Creates a new shipment for the authenticated user.
+    /// </summary>
     [HttpPost]
     [Authorize(Roles = "CUSTOMER,ADMIN")]
     public async Task<IActionResult> Create([FromBody] CreateShipmentRequest request)
@@ -28,6 +34,20 @@ public class ShipmentsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = shipment.ShipmentId }, shipment);
     }
 
+    /// <summary>
+    /// Books an existing shipment (customer only).
+    /// </summary>
+    [HttpPost("{id}/book")]
+    [Authorize(Roles = "CUSTOMER")]
+    public async Task<IActionResult> Book(Guid id)
+    {
+        await _shipmentService.BookShipmentAsync(GetUserId(), id);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Gets a shipment by its id.
+    /// </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
@@ -36,6 +56,9 @@ public class ShipmentsController : ControllerBase
         return Ok(shipment);
     }
 
+    /// <summary>
+    /// Gets shipments belonging to the authenticated customer.
+    /// </summary>
     [HttpGet("my")]
     [Authorize(Roles = "CUSTOMER")]
     public async Task<IActionResult> GetMyShipments()

@@ -1,5 +1,8 @@
 namespace SmartShip.Core.Authentication;
 
+/// <summary>
+/// JWT configuration bound from configuration (e.g., appsettings.json).
+/// </summary>
 public class JwtSettings
 {
     public string Secret { get; set; } = string.Empty;

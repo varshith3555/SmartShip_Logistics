@@ -4,6 +4,9 @@ using SmartShip.ShipmentService.Models;
 
 namespace SmartShip.ShipmentService.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IShipmentRepository"/>.
+/// </summary>
 public class ShipmentRepository : IShipmentRepository
 {
     private readonly ShipmentDbContext _context;
@@ -20,7 +23,6 @@ public class ShipmentRepository : IShipmentRepository
             .Include(s => s.ReceiverAddress)
             .Include(s => s.Items)
             .Include(s => s.PickupDetails)
-            .Include(s => s.Payment)
             .FirstOrDefaultAsync(s => s.ShipmentId == id);
     }
 

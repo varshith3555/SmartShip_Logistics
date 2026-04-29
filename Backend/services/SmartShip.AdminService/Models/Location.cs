@@ -1,5 +1,8 @@
 namespace SmartShip.AdminService.Models;
 
+/// <summary>
+/// Location entity used by hubs and address-like data.
+/// </summary>
 public class Location
 {
     public Guid LocationId { get; set; }

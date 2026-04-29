@@ -1,0 +1,5 @@
+Shipment Label
+ShipmentId: db5499f3-1df6-4779-b35f-acb7671f0ca3
+TrackingNumber: TRK5049996280
+HubId: HUB-MAIN
+GeneratedAtUtc: 2026-04-13T12:31:43.7937802Z

@@ -1,5 +1,8 @@
 namespace SmartShip.IdentityService.Models;
 
+/// <summary>
+/// Password reset token entity (OTP-based) with expiry and attempt tracking.
+/// </summary>
 public class PasswordResetToken
 {
     public Guid TokenId { get; set; }

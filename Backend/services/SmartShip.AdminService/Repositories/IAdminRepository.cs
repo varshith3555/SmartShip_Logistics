@@ -2,6 +2,9 @@ using SmartShip.AdminService.Models;
 
 namespace SmartShip.AdminService.Repositories;
 
+/// <summary>
+/// Data-access abstraction for hubs, locations, reports, and shipment exceptions.
+/// </summary>
 public interface IAdminRepository
 {
     Task<Hub> CreateHubAsync(Hub hub);
@@ -26,4 +29,6 @@ public interface IAdminRepository
 
     Task<IEnumerable<Report>> GetAllReportsAsync();
     Task<Report?> GetReportByTypeAsync(string type);
+
+    Task<Report> AddReportAsync(Report report);
 }

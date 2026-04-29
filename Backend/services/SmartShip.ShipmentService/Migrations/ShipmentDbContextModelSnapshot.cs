@@ -61,33 +61,6 @@ namespace SmartShip.ShipmentService.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("SmartShip.ShipmentService.Models.Payment", b =>
-                {
-                    b.Property<Guid>("PaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ShipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PaymentId");
-
-                    b.HasIndex("ShipmentId")
-                        .IsUnique();
-
-                    b.ToTable("Payments");
-                });
-
             modelBuilder.Entity("SmartShip.ShipmentService.Models.PickupDetails", b =>
                 {
                     b.Property<Guid>("PickupId")
@@ -186,17 +159,6 @@ namespace SmartShip.ShipmentService.Migrations
                     b.ToTable("ShipmentItems");
                 });
 
-            modelBuilder.Entity("SmartShip.ShipmentService.Models.Payment", b =>
-                {
-                    b.HasOne("SmartShip.ShipmentService.Models.Shipment", "Shipment")
-                        .WithOne("Payment")
-                        .HasForeignKey("SmartShip.ShipmentService.Models.Payment", "ShipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shipment");
-                });
-
             modelBuilder.Entity("SmartShip.ShipmentService.Models.PickupDetails", b =>
                 {
                     b.HasOne("SmartShip.ShipmentService.Models.Shipment", "Shipment")
@@ -241,8 +203,6 @@ namespace SmartShip.ShipmentService.Migrations
             modelBuilder.Entity("SmartShip.ShipmentService.Models.Shipment", b =>
                 {
                     b.Navigation("Items");
-
-                    b.Navigation("Payment");
 
                     b.Navigation("PickupDetails");
                 });

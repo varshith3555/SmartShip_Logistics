@@ -1,5 +1,8 @@
 namespace SmartShip.IdentityService.Models;
 
+/// <summary>
+/// User entity for authentication/authorization.
+/// </summary>
 public class User
 {
     public Guid UserId { get; set; }

@@ -7,6 +7,9 @@ namespace SmartShip.TrackingService.Controllers;
 
 [ApiController]
 [Route("api")]
+/// <summary>
+/// Tracking API for querying shipment tracking details and managing tracking events.
+/// </summary>
 public class TrackingController : ControllerBase
 {
     private readonly ITrackingService _trackingService;
@@ -16,6 +19,9 @@ public class TrackingController : ControllerBase
         _trackingService = trackingService;
     }
 
+    /// <summary>
+    /// Gets the tracking timeline (including history) for a tracking number.
+    /// </summary>
     [HttpGet("{trackingNumber}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetTracking(string trackingNumber)
@@ -25,6 +31,9 @@ public class TrackingController : ControllerBase
         return Ok(response);
     }
 
+    /// <summary>
+    /// Gets only the tracking history entries for a tracking number.
+    /// </summary>
     [HttpGet("{trackingNumber}/timeline")]
     [AllowAnonymous]
     public async Task<IActionResult> GetTimeline(string trackingNumber)
@@ -34,6 +43,9 @@ public class TrackingController : ControllerBase
         return Ok(response.History);
     }
 
+    /// <summary>
+    /// Gets tracking events for a tracking number.
+    /// </summary>
     [HttpGet("{trackingNumber}/events")]
     [AllowAnonymous]
     public async Task<IActionResult> GetEvents(string trackingNumber)
@@ -43,6 +55,9 @@ public class TrackingController : ControllerBase
         return Ok(response.History);
     }
 
+    /// <summary>
+    /// Creates a tracking event (admin only).
+    /// </summary>
     [HttpPost("events")]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> CreateEvent([FromBody] CreateTrackingEventRequest request)
@@ -51,6 +66,9 @@ public class TrackingController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Updates an existing tracking event (admin only).
+    /// </summary>
     [HttpPut("events/{id}")]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] UpdateTrackingEventRequest request)
@@ -59,6 +77,9 @@ public class TrackingController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes a tracking event by id (admin only).
+    /// </summary>
     [HttpDelete("events/{id}")]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> DeleteEvent(Guid id)
@@ -67,6 +88,9 @@ public class TrackingController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Updates the current location for a tracking number.
+    /// </summary>
     [HttpPost("location")]
     [Authorize(Roles = "ADMIN,CUSTOMER")]
     public async Task<IActionResult> UpdateLocation([FromBody] PostLocationRequest request)
@@ -75,6 +99,9 @@ public class TrackingController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Gets the most recent known location for a tracking number.
+    /// </summary>
     [HttpGet("location/{trackingNumber}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetLocation(string trackingNumber)
@@ -85,6 +112,9 @@ public class TrackingController : ControllerBase
         return Ok(new { CurrentLocation = latestEvent?.Location ?? "Unknown" });
     }
 
+    /// <summary>
+    /// Gets the current status for a tracking number.
+    /// </summary>
     [HttpGet("{trackingNumber}/status")]
     [AllowAnonymous]
     public async Task<IActionResult> GetStatus(string trackingNumber)
@@ -93,6 +123,9 @@ public class TrackingController : ControllerBase
         return Ok(new { Status = status });
     }
 
+    /// <summary>
+    /// Updates the current status for a tracking number (admin only).
+    /// </summary>
     [HttpPut("{trackingNumber}/status")]
     [Authorize(Roles = "ADMIN")]
     public async Task<IActionResult> UpdateStatus(string trackingNumber, [FromBody] UpdateStatusRequest request)

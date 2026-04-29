@@ -1,5 +1,8 @@
 namespace SmartShip.ShipmentService.Models;
 
+/// <summary>
+/// Pickup scheduling details for a shipment.
+/// </summary>
 public class PickupDetails
 {
     public Guid PickupId { get; set; }   // keep this

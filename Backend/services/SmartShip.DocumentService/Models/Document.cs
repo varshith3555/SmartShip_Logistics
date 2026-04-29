@@ -1,5 +1,8 @@
 namespace SmartShip.DocumentService.Models;
 
+/// <summary>
+/// Document metadata record for files uploaded against shipments.
+/// </summary>
 public class Document
 {
     public Guid DocumentId { get; set; }
