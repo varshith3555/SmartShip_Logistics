@@ -1,4 +1,4 @@
-# 🚚 SmartShip Logistics – Microservices-Based Logistics Platform
+# SmartShip Logistics – Microservices-Based Logistics Platform
 
 SmartShip Logistics is a microservices-based web platform designed to manage shipments, tracking, and administrative operations through a scalable and modular architecture.
 
@@ -8,7 +8,7 @@ This project demonstrates real-world backend concepts such as microservices arch
 
 ---
 
-## 📌 Features
+## Features
 
 - Shipment management and tracking  
 - Modular microservices architecture  
@@ -20,7 +20,7 @@ This project demonstrates real-world backend concepts such as microservices arch
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The application follows a microservices architecture where each service is independently developed and handles a specific business function.
 
@@ -32,7 +32,7 @@ The application follows a microservices architecture where each service is indep
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Backend:** ASP.NET Core, C#, REST APIs  
 **Frontend:** Angular, TypeScript, JavaScript  
@@ -41,12 +41,14 @@ The application follows a microservices architecture where each service is indep
 
 ---
 
-## ⚙️ How to Run the Project
+## How to Run the Project
 
 ### Backend
-1. Navigate to Backend folder  
-2. Open `SmartShip.Logistics.sln` in Visual Studio  
-3. Run the required services  
+```bash
+cd Backend
+# Open SmartShip.Logistics.sln in Visual Studio
+# Run API Gateway and required microservices
+```
 
 ### Frontend
 ```bash
@@ -63,7 +65,7 @@ ng serve
 
 ---
 
-## 🔄 System Workflow
+## System Workflow
 
 1. Client sends request from Angular UI  
 2. Request passes through Ocelot API Gateway  
@@ -73,7 +75,7 @@ ng serve
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```bash
 Backend/                         # .NET microservices + API Gateway (Ocelot)
@@ -91,7 +93,7 @@ frontend/                        # Angular application
   smartship-ui/                  # Main frontend project
 ```
 ---
-## 🔐 Authentication
+## Authentication
 
 - JWT-based authentication  
 - Secure API access control  
@@ -99,7 +101,7 @@ frontend/                        # Angular application
 
 ---
 
-## 📊 Key Highlights
+## Key Highlights
 
 - Designed and implemented a microservices-based architecture  
 - Built scalable and maintainable REST APIs  
@@ -110,7 +112,7 @@ frontend/                        # Angular application
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 - Implement caching for performance optimization  
 - Enhance monitoring and observability  
