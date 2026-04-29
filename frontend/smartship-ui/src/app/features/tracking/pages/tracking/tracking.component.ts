@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { finalize } from 'rxjs/operators';
@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TrackingService } from '../../../../core/services/tracking.service';
 import { TrackingHistoryDto, TrackingResponseDto } from '../../../../core/models/tracking.models';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { trimRequired } from '../../../../shared/validators/trim-required.validator';
 
 @Component({
   selector: 'app-tracking',
@@ -27,267 +28,8 @@ import { StatusBadgeComponent } from '../../../../shared/components/status-badge
     MatIconModule,
     StatusBadgeComponent,
   ],
-  template: `
-    <div class="sss-page">
-      <h1 class="sss-title">Tracking</h1>
-      <p class="sss-sub">Enter a tracking number to see live status and journey history.</p>
-
-      <mat-card class="track-card">
-        <mat-card-content>
-          <form [formGroup]="form" (ngSubmit)="onTrack()" class="track-form">
-            <mat-form-field appearance="outline" class="track-field">
-              <mat-label>Tracking number</mat-label>
-              <span matPrefix class="field-prefix"><mat-icon>confirmation_number</mat-icon></span>
-              <input matInput formControlName="trackingNumber" />
-            </mat-form-field>
-            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
-              <mat-icon *ngIf="!loading">search</mat-icon>
-              {{ loading ? 'Tracking…' : 'Track' }}
-            </button>
-          </form>
-
-          <div class="result" *ngIf="tracking">
-            <div class="result-head">
-              <div>
-                <div class="muted">Current status</div>
-                <div class="status-line">
-                  <app-status-badge [status]="status ?? tracking.currentStatus" />
-                </div>
-              </div>
-              <div class="meta" *ngIf="tracking.trackingNumber">
-                <div class="muted">Tracking #</div>
-                <div class="mono">{{ tracking.trackingNumber }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="timeline" *ngIf="journeyTimeline.length">
-            <h2 class="timeline-title">Shipment journey</h2>
-            <ol class="timeline-list">
-              <li
-                *ngFor="let step of journeyTimeline; let last = last"
-                class="timeline-item"
-                [ngClass]="step.state"
-              >
-                <div class="timeline-marker">
-                  <div class="timeline-icon">
-                    <mat-icon>{{ step.icon }}</mat-icon>
-                  </div>
-                  <div class="timeline-line" *ngIf="!last"></div>
-                </div>
-                <div class="timeline-body">
-                  <div class="timeline-header">
-                    <span class="timeline-label">{{ step.label }}</span>
-                    <span class="timeline-tag" *ngIf="step.state === 'current'">Current</span>
-                    <span class="timeline-tag timeline-tag--done" *ngIf="step.state === 'done'">Completed</span>
-                  </div>
-                  <p class="timeline-caption" [ngClass]="'timeline-caption--' + step.state">
-                    {{ step.caption }}
-                  </p>
-                  <div class="timeline-meta" *ngIf="step.event">
-                    <div class="timeline-meta-main">
-                      <span class="meta-when">{{ step.event.timestamp | date : 'short' }}</span>
-                      <span class="meta-where" *ngIf="step.event.location">{{ step.event.location }}</span>
-                    </div>
-                    <p class="meta-remarks" *ngIf="step.event.remarks">{{ step.event.remarks }}</p>
-                  </div>
-                </div>
-              </li>
-            </ol>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
-  styles: [
-    `
-      .sss-page {
-        max-width: 900px;
-        margin: 0 auto;
-      }
-      .sss-title {
-        margin: 0 0 4px;
-        font-size: 1.5rem;
-        font-weight: 600;
-      }
-      .sss-sub {
-        margin: 0 0 18px;
-        color: var(--ss-text-muted);
-      }
-      .track-form {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        flex-wrap: wrap;
-      }
-      .track-field {
-        flex: 1 1 320px;
-      }
-      .field-prefix {
-        margin-right: 8px;
-        display: inline-flex;
-        color: rgba(15, 23, 42, 0.45);
-      }
-      .result {
-        margin-top: 18px;
-        padding-top: 16px;
-        border-top: 1px solid var(--ss-border);
-      }
-      .result-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: flex-start;
-      }
-      .muted {
-        font-size: 12px;
-        color: var(--ss-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      .status-line {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      }
-      .timeline {
-        margin-top: 18px;
-      }
-      .timeline-title {
-        margin: 0 0 10px;
-        font-size: 1.05rem;
-      }
-      .timeline-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .timeline-item {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 14px;
-        position: relative;
-        padding: 10px 0;
-      }
-      .timeline-marker {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-      }
-      .timeline-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 999px;
-        display: grid;
-        place-items: center;
-        background: var(--ss-surface-secondary);
-        color: var(--ss-text-muted);
-        border: 1px solid var(--ss-border);
-      }
-      .timeline-icon mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-      .timeline-line {
-        flex: 1;
-        width: 2px;
-        background: linear-gradient(to bottom, var(--ss-border), transparent);
-        margin-top: 4px;
-      }
-      .timeline-body {
-        padding-top: 2px;
-      }
-      .timeline-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 2px;
-      }
-      .timeline-label {
-        font-weight: 600;
-        font-size: 0.98rem;
-      }
-      .timeline-tag {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        padding: 2px 8px;
-        border-radius: 999px;
-        background: rgba(59, 130, 246, 0.12);
-        color: #1d4ed8;
-        font-weight: 600;
-      }
-      .timeline-tag--done {
-        background: rgba(34, 197, 94, 0.12);
-        color: #15803d;
-      }
-      .timeline-caption {
-        margin: 0 0 4px;
-        font-size: 0.9rem;
-        color: var(--ss-text-muted);
-      }
-      .timeline-caption--current {
-        color: var(--ss-text);
-      }
-      .timeline-caption--done {
-        color: var(--ss-text-muted);
-      }
-      .timeline-caption--upcoming {
-        font-style: italic;
-      }
-      .timeline-meta {
-        font-size: 0.82rem;
-        color: var(--ss-text-muted);
-      }
-      .timeline-meta-main {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .meta-when {
-        font-weight: 500;
-      }
-      .meta-where {
-        opacity: 0.9;
-      }
-      .meta-remarks {
-        margin: 2px 0 0;
-      }
-      .timeline-item.done .timeline-icon {
-        background: var(--ss-primary);
-        border-color: var(--ss-primary);
-        color: #fff;
-      }
-      .timeline-item.current .timeline-icon {
-        background: var(--ss-primary-dark);
-        border-color: var(--ss-primary-dark);
-        color: #fff;
-        box-shadow: var(--ss-shadow);
-      }
-      .timeline-item.upcoming .timeline-icon {
-        opacity: 0.7;
-      }
-      @media (max-width: 800px) {
-        .track-form {
-          flex-direction: column;
-        }
-        .track-form button {
-          width: 100%;
-        }
-        .timeline-item {
-          gap: 10px;
-        }
-      }
-    `,
-  ],
+  templateUrl: './tracking.component.html',
+  styleUrls: ['./tracking.component.scss'],
 })
 export class TrackingComponent {
   private readonly fb = inject(FormBuilder);
@@ -295,7 +37,7 @@ export class TrackingComponent {
   private readonly route = inject(ActivatedRoute);
 
   readonly form = this.fb.group({
-    trackingNumber: ['', [Validators.required]],
+    trackingNumber: ['', [trimRequired]],
   });
 
   tracking: TrackingResponseDto | null = null;
@@ -324,6 +66,12 @@ export class TrackingComponent {
       caption: 'Shipment is created and booking confirmed.',
     },
     {
+      key: 'PICKED_UP',
+      label: 'Picked Up',
+      icon: 'inventory_2',
+      caption: 'Shipment has been picked up and is at the origin hub.',
+    },
+    {
       key: 'IN_TRANSIT',
       label: 'In Transit',
       icon: 'local_shipping',
@@ -343,7 +91,7 @@ export class TrackingComponent {
     },
   ] as const;
 
-  private readonly journeyOrder = ['BOOKED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'] as const;
+  private readonly journeyOrder = ['BOOKED', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'] as const;
 
   get journeyTimeline():
     | Array<{
@@ -364,6 +112,7 @@ export class TrackingComponent {
 
     const byStage: Record<(typeof this.journeyOrder)[number], TrackingHistoryDto | null> = {
       BOOKED: null,
+      PICKED_UP: null,
       IN_TRANSIT: null,
       OUT_FOR_DELIVERY: null,
       DELIVERED: null,
@@ -391,7 +140,9 @@ export class TrackingComponent {
   onTrack(): void {
     if (this.form.invalid) return;
 
-    const trackingNumber = this.form.getRawValue().trackingNumber ?? '';
+    const trackingNumber = (this.form.getRawValue().trackingNumber ?? '').trim();
+    if (!trackingNumber) return;
+
     this.loading = true;
     forkJoin({
       tracking: this.api.getTracking(trackingNumber),
@@ -412,12 +163,22 @@ export class TrackingComponent {
     const status = (rawStatus ?? '').toUpperCase();
     if (!status) return 'BOOKED';
 
+    // When tracking events haven't been ingested yet, the API may return "Not Found".
+    // Never advance the journey for unknown statuses.
+    if (status.includes('NOT FOUND') || status.includes('UNKNOWN')) {
+      return 'BOOKED';
+    }
+
     if (status.includes('DELIVERED') || status.includes('COMPLETED')) {
       return 'DELIVERED';
     }
 
     if (status.includes('OUT FOR')) {
       return 'OUT_FOR_DELIVERY';
+    }
+
+    if (status.includes('PICKED')) {
+      return 'PICKED_UP';
     }
 
     if (status.includes('TRANSIT') || status.includes('SHIPPED') || status.includes('IN TRANSIT')) {
@@ -428,6 +189,7 @@ export class TrackingComponent {
       return 'BOOKED';
     }
 
-    return 'IN_TRANSIT';
+    // Fallback: keep at BOOKED rather than jumping ahead.
+    return 'BOOKED';
   }
 }

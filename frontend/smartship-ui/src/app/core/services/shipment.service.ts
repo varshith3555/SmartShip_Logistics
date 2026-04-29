@@ -44,6 +44,11 @@ export class ShipmentService {
     return this.api.post<Shipment>('/gateway/shipments', request).pipe(map((s) => this.normalizeShipment(s)));
   }
 
+  // CUSTOMER
+  bookShipment(id: string): Observable<void> {
+    return this.api.post<void>(`/gateway/shipments/${id}/book`, {});
+  }
+
   getShipmentById(id: string): Observable<Shipment> {
     return this.api.get<Shipment>(`/gateway/shipments/${id}`).pipe(map((s) => this.normalizeShipment(s)));
   }

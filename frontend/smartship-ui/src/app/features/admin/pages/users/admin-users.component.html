@@ -1,0 +1,92 @@
+    <div class="sss-page">
+      <h1 class="sss-title">Users</h1>
+      <p class="sss-sub">Admin-only user directory.</p>
+
+      <mat-card class="toolbar-card">
+        <mat-card-content class="toolbar">
+          <mat-form-field appearance="outline" class="search">
+            <mat-label>Search users</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input
+              matInput
+              placeholder="Name or email"
+              [value]="query"
+              (input)="onQueryChange(($any($event.target).value || '').toString())"
+            />
+          </mat-form-field>
+          <span class="count">{{ filtered.length }} shown</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-content class="wrap">
+          <div class="sk" *ngIf="!loaded">
+            <div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5]">
+              <div class="sk-cell sk--lg"></div>
+              <div class="sk-cell sk--md"></div>
+              <div class="sk-cell sk--sm"></div>
+              <div class="sk-cell sk--sm"></div>
+            </div>
+          </div>
+
+          <table mat-table [dataSource]="filtered" class="tbl" *ngIf="loaded">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let u">{{ u.name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Role</th>
+              <td mat-cell *matCellDef="let u">
+                <ng-container *ngIf="!isSelf(u); else selfRole">
+                  <mat-form-field appearance="outline" class="role-field">
+                    <mat-select
+                      [value]="roleDraft[u.userId]"
+                      (selectionChange)="roleDraft[u.userId] = $event.value"
+                      [disabled]="isSaving(u)"
+                      aria-label="Role"
+                    >
+                      <mat-option value="CUSTOMER">CUSTOMER</mat-option>
+                      <mat-option value="ADMIN">ADMIN</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ng-container>
+                <ng-template #selfRole>
+                  <span class="pill">{{ u.role }}</span>
+                </ng-template>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Created</th>
+              <td mat-cell *matCellDef="let u">{{ u.createdAt | date : 'medium' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let u" class="actions">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="button"
+                  (click)="saveRole(u)"
+                  [disabled]="isSelf(u) || isSaving(u) || !isRoleChanged(u)"
+                >
+                  Save
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="cols"></tr>
+            <tr mat-row *matRowDef="let row; columns: cols" class="row"></tr>
+          </table>
+
+          <p class="empty" *ngIf="loaded && !filtered.length">No users match your search.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>

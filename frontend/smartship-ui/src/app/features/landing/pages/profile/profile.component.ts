@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LandingNavbarComponent } from '../../components/navbar/landing-navbar.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { phone10Digits } from '../../../../shared/validators/phone-10digits.validator';
 
 @Component({
   selector: 'app-profile',
@@ -40,7 +41,7 @@ export class ProfileComponent implements OnInit {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.pattern(/^\+?[\d\s-()]+$/)]],
+      phone: ['', [phone10Digits]],
       address: ['']
     });
 

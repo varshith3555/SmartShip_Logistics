@@ -8,6 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { Hub, Location } from '../../../../core/models/admin.models';
 import { AdminService } from '../../../../core/services/admin.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { trimRequired } from '../../../../shared/validators/trim-required.validator';
+import { pincode6Digits } from '../../../../shared/validators/pincode-6digits.validator';
 
 export interface HubFormDialogData {
   mode: 'create' | 'edit';
@@ -25,58 +27,8 @@ export interface HubFormDialogData {
     MatInputModule,
     MatButtonModule,
   ],
-  template: `
-    <h2 mat-dialog-title>{{ data.mode === 'create' ? 'Add hub' : 'Edit hub' }}</h2>
-    <form mat-dialog-content [formGroup]="form" (ngSubmit)="save()">
-      <mat-form-field appearance="outline" class="full">
-        <mat-label>Hub name</mat-label>
-        <input matInput formControlName="hubName" />
-      </mat-form-field>
-
-      <div class="loc">
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>City</mat-label>
-          <input matInput formControlName="city" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>State</mat-label>
-          <input matInput formControlName="state" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Country</mat-label>
-          <input matInput formControlName="country" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Pincode</mat-label>
-          <input matInput formControlName="pincode" inputmode="numeric" />
-        </mat-form-field>
-      </div>
-
-      <mat-form-field appearance="outline" class="full">
-        <mat-label>Capacity</mat-label>
-        <input matInput type="number" formControlName="capacity" />
-      </mat-form-field>
-    </form>
-    <div mat-dialog-actions align="end">
-      <button mat-button type="button" (click)="ref.close()">Cancel</button>
-      <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="form.invalid || saving">
-        {{ saving ? 'Saving…' : 'Save' }}
-      </button>
-    </div>
-  `,
-  styles: [
-    `
-      .full {
-        width: 100%;
-      }
-      .loc {
-        margin-top: 4px;
-      }
-    `,
-  ],
+  templateUrl: './hub-form-dialog.component.html',
+  styleUrls: ['./hub-form-dialog.component.scss'],
 })
 export class HubFormDialogComponent {
   private readonly fb = inject(FormBuilder);
@@ -89,11 +41,11 @@ export class HubFormDialogComponent {
   saving = false;
 
   readonly form = this.fb.nonNullable.group({
-    hubName: ['', Validators.required],
-    city: ['', [Validators.required, Validators.minLength(2)]],
-    state: ['', [Validators.required, Validators.minLength(2)]],
-    country: ['', [Validators.required, Validators.minLength(2)]],
-    pincode: ['', [Validators.required, Validators.minLength(3)]],
+    hubName: ['', trimRequired],
+    city: ['', [trimRequired, Validators.minLength(2)]],
+    state: ['', [trimRequired, Validators.minLength(2)]],
+    country: ['', [trimRequired, Validators.minLength(2)]],
+    pincode: ['', [trimRequired, pincode6Digits]],
     capacity: [1, [Validators.required, Validators.min(1)]],
   });
 

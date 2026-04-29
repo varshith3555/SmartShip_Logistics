@@ -1,86 +1,112 @@
-<div class="auth-container">
-  <div class="auth-wrapper">
-    <div class="auth-brand">
-      <h1 class="brand-title">SmartShip</h1>
-      <p class="brand-subtitle">Create your account and start shipping smarter</p>
+<div class="auth-container split-layout">
+  <div class="auth-form-side">
+    <div class="auth-wrapper">
+      <mat-card class="auth-card">
+        <mat-card-content>
+          <div class="auth-brand">
+            <img src="assets/images/smartship-logo.png" alt="SmartShip" class="brand-logo">
+            <p class="brand-subtitle">Create your account and start shipping smarter</p>
+          </div>
+
+          <h2 class="auth-title">Sign Up</h2>
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <mat-icon matPrefix class="input-icon">person</mat-icon>
+              <input matInput formControlName="name" placeholder="John Doe">
+              <mat-error *ngIf="form.get('name')?.hasError('required')">
+                Name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix class="input-icon">email</mat-icon>
+              <input matInput type="email" formControlName="email" placeholder="you@example.com">
+              <mat-error *ngIf="form.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="form.get('email')?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <mat-icon matPrefix class="input-icon">phone</mat-icon>
+              <input matInput formControlName="phone" placeholder="9876543210">
+              <mat-error *ngIf="form.get('phone')?.hasError('required')">
+                Phone is required
+              </mat-error>
+              <mat-error *ngIf="form.get('phone')?.hasError('phone10Digits')">
+                Phone number must be 10 digits
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <mat-icon matPrefix class="input-icon">lock</mat-icon>
+              <input matInput type="password" formControlName="password" placeholder="Minimum 8 characters">
+              <mat-error *ngIf="form.get('password')?.hasError('required')">
+                Password is required
+              </mat-error>
+              <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+                Password must be at least 8 characters
+              </mat-error>
+              <mat-error *ngIf="form.get('password')?.hasError('pattern')">
+                Password must include uppercase, lowercase, number, and special character
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm Password</mat-label>
+              <mat-icon matPrefix class="input-icon">lock</mat-icon>
+              <input matInput type="password" formControlName="confirmPassword" placeholder="Re-enter password">
+              <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
+                Please confirm your password
+              </mat-error>
+              <mat-error
+                *ngIf="form.hasError('passwordMismatch') && (form.get('confirmPassword')?.dirty || form.get('confirmPassword')?.touched)">
+                Passwords do not match
+              </mat-error>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="form.invalid">
+              Send OTP
+            </button>
+          </form>
+
+          <div class="auth-links">
+            <p class="link-text">
+              Already have an account?
+              <a routerLink="/auth/login" class="link">Login here</a>
+            </p>
+            <p class="link-text">
+              <a routerLink="/" class="link">Back to Home</a>
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
     </div>
+  </div>
 
-    <mat-card class="auth-card">
-      <mat-card-content>
-        <h2 class="auth-title">Sign Up</h2>
-        
-        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Full Name</mat-label>
-            <mat-icon matPrefix class="input-icon">person</mat-icon>
-            <input matInput formControlName="name" placeholder="John Doe">
-            <mat-error *ngIf="form.get('name')?.hasError('required')">
-              Name is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Email Address</mat-label>
-            <mat-icon matPrefix class="input-icon">email</mat-icon>
-            <input matInput type="email" formControlName="email" placeholder="you@example.com">
-            <mat-error *ngIf="form.get('email')?.hasError('required')">
-              Email is required
-            </mat-error>
-            <mat-error *ngIf="form.get('email')?.hasError('email')">
-              Please enter a valid email
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Phone Number</mat-label>
-            <mat-icon matPrefix class="input-icon">phone</mat-icon>
-            <input matInput formControlName="phone" placeholder="+1 234 567 8900">
-            <mat-error *ngIf="form.get('phone')?.hasError('required')">
-              Phone is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Password</mat-label>
-            <mat-icon matPrefix class="input-icon">lock</mat-icon>
-            <input matInput type="password" formControlName="password" placeholder="Minimum 8 characters">
-            <mat-error *ngIf="form.get('password')?.hasError('required')">
-              Password is required
-            </mat-error>
-            <mat-error *ngIf="form.get('password')?.hasError('minlength')">
-              Password must be at least 8 characters
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Confirm Password</mat-label>
-            <mat-icon matPrefix class="input-icon">lock</mat-icon>
-            <input matInput type="password" formControlName="confirmPassword" placeholder="Re-enter password">
-            <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
-              Please confirm your password
-            </mat-error>
-          </mat-form-field>
-
-          <button 
-            mat-raised-button 
-            color="primary" 
-            type="submit" 
-            class="submit-button"
-            [disabled]="form.invalid">
-            Send OTP
-          </button>
-        </form>
-
-        <div class="auth-links">
-          <p class="link-text">
-            Already have an account? 
-            <a routerLink="/auth/login" class="link">Login here</a>
+  <div class="auth-showcase-side">
+    <div class="showcase-content">
+      <div class="showcase-text-wrapper">
+        <div class="badge">Join SmartShip</div>
+        <h2 class="showcase-heading">Trusted by Enterprise Supply Chains.</h2>
+        <div class="testimonial-box">
+          <p class="showcase-subtext italic">
+            "SmartShip transformed our logistics infrastructure. We cut overhead by 30% and achieved 99.9% on-time
+            deliveries within the first month."
           </p>
-          <p class="link-text">
-            <a routerLink="/" class="link">Back to Home</a>
-          </p>
+          <div class="testimonial-author">
+            <strong>— Director of Logistics</strong>
+            <span>GlobalCorp</span>
+          </div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </div>

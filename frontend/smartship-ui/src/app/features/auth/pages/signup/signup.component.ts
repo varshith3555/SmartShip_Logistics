@@ -1,6 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +16,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { phone10Digits } from '../../../../shared/validators/phone-10digits.validator';
+
+const PASSWORD_STRENGTH_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const group = control as unknown as { get?: (name: string) => AbstractControl | null };
+  const password = group.get?.('password')?.value;
+  const confirmPassword = group.get?.('confirmPassword')?.value;
+
+  if (!password || !confirmPassword) return null;
+
+  return password === confirmPassword ? null : { passwordMismatch: true };
+};
 
 @Component({
   selector: 'app-signup',
@@ -35,10 +55,13 @@ export class SignupComponent {
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    phone: ['', [Validators.required, phone10Digits]],
+    password: [
+      '',
+      [Validators.required, Validators.minLength(8), Validators.pattern(PASSWORD_STRENGTH_REGEX)],
+    ],
     confirmPassword: ['', [Validators.required]],
-  });
+  }, { validators: [passwordsMatchValidator] });
 
   onSubmit(): void {
     if (this.form.invalid) return;

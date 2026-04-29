@@ -1,0 +1,39 @@
+      .ss-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        line-height: 1.4;
+        white-space: nowrap;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+      }
+      .ss-badge--neutral {
+        background: #f3f4f6;
+        color: #4b5563;
+        border-color: #e5e7eb;
+      }
+      .ss-badge--info {
+        background: #dbeafe;
+        color: #1e40af;
+        border-color: #bfdbfe;
+      }
+      .ss-badge--success {
+        background: #d1fae5;
+        color: #065f46;
+        border-color: #a7f3d0;
+      }
+      .ss-badge--warning {
+        background: #fef3c7;
+        color: #92400e;
+        border-color: #fde68a;
+      }
+      .ss-badge--danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border-color: #fecaca;
+      }

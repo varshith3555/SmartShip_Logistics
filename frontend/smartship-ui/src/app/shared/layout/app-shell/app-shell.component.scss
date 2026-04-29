@@ -34,27 +34,19 @@
   border-bottom: 1px solid #f5f5f5;
 }
 
-.shell__logo {
+.shell__logo-image {
+  height: 100px;
+  width: auto;
+  margin: -20px -25px;
+  mix-blend-mode: darken;
+  transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: -0.02em;
-  color: #fff;
-  background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%);
-  box-shadow: 0 4px 14px rgba(255, 107, 53, 0.30);
-}
 
-.shell__brand-text {
-  font-weight: 800;
-  font-size: 1.05rem;
-  letter-spacing: -0.03em;
-  color: var(--ss-text);
-  white-space: nowrap;
+  &.collapsed {
+    height: 50px;
+    margin: -5px -10px;
+    object-fit: contain;
+  }
 }
 
 /* ── Section Labels ─────────────────────────────────────────────── */
@@ -224,6 +216,24 @@
   color: #1d4ed8;
 }
 
+/* ── Toolbar Email ─────────────────────────────────────────────── */
+.shell__email {
+  max-width: 320px;
+  margin-right: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ss-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .shell__email {
+    display: none;
+  }
+}
+
 /* ── Account / User Menu ────────────────────────────────────────── */
 .shell__menu-header {
   opacity: 1 !important;
@@ -234,6 +244,13 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--ss-text-muted) !important;
+}
+
+.shell__menu-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
 }
 
 .shell__menu-header-icon {

@@ -1,0 +1,183 @@
+      .sss-page {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .sss-title {
+        margin: 0 0 4px;
+        font-size: 1.5rem;
+        font-weight: 650;
+      }
+      .sss-sub {
+        margin: 0;
+        color: var(--ss-text-muted);
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 900px) {
+        .kpi-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .kpi mat-card-content {
+        padding: 16px !important;
+      }
+      .kpi-label {
+        color: var(--ss-text-muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .kpi-value {
+        margin-top: 6px;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .kpi-trend {
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ss-text-muted);
+        font-size: 0.92rem;
+      }
+      .kpi-trend mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+      .kpi-trend--up {
+        color: var(--ss-success);
+      }
+      .kpi-trend--down {
+        color: var(--ss-error);
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 900px) {
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+      .bars {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        align-items: end;
+        height: 140px;
+        padding: 8px 4px 0;
+      }
+      .bar {
+        position: relative;
+        border-radius: 10px 10px 6px 6px;
+        background: linear-gradient(180deg, rgba(21, 101, 192, 0.95), rgba(21, 101, 192, 0.35));
+        min-height: 18px;
+      }
+      .bar-tip {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #1565c0;
+        opacity: 0.9;
+      }
+      .xaxis {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+        color: var(--ss-text-muted);
+        font-size: 12px;
+        text-align: center;
+      }
+      .line-svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .tbl-card mat-card-content {
+        overflow: auto;
+      }
+      .tbl {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .tbl th,
+      .tbl td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--ss-border);
+        text-align: left;
+      }
+      .ar {
+        text-align: right;
+      }
+      .pill {
+        display: inline-flex;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: rgba(100, 116, 139, 0.12);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+      }
+      .empty {
+        margin: 0;
+        padding: 16px 8px;
+        color: var(--ss-text-muted);
+        text-align: center;
+      }
+      .sk {
+        padding: 8px 0;
+      }
+      .sk-row {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 120px;
+        gap: 12px;
+        padding: 14px 8px;
+        border-bottom: 1px solid var(--ss-border);
+      }
+      .sk-cell {
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #e2e8f0, #f1f5f9, #e2e8f0);
+        background-size: 200% 100%;
+        animation: shimmer 1.2s ease-in-out infinite;
+      }
+      .sk--lg {
+        width: 70%;
+      }
+      .sk--md {
+        width: 55%;
+      }
+      .sk--sm {
+        width: 45%;
+        justify-self: end;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }

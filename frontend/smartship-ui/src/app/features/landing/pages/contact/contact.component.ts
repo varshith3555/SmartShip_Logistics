@@ -25,19 +25,19 @@ export class ContactComponent {
     {
       icon: 'email',
       title: 'Email',
-      value: 'support@smartship.com',
-      link: 'mailto:support@smartship.com'
+      value: 'varshith1220@gmail.com',
+      link: 'mailto:varshith1220@gmail.com'
     },
     {
       icon: 'phone',
       title: 'Phone',
-      value: '+1 (555) 123-4567',
-      link: 'tel:+15551234567'
+      value: '7893837321',
+      link: 'tel:7893837321'
     },
     {
       icon: 'location_on',
       title: 'Address',
-      value: '123 Logistics Ave, Suite 100, New York, NY 10001',
+      value: 'LPU, Delhi - G.T Road, Punjab',
       link: null
     }
   ];

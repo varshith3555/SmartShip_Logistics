@@ -51,6 +51,14 @@ export class AppShellComponent {
     return this.auth.role;
   }
 
+  get email(): string {
+    return String(this.auth.getCurrentUser()?.email ?? '').trim();
+  }
+
+  get displayName(): string {
+    return String(this.auth.getCurrentUser()?.name ?? '').trim();
+  }
+
   get isAdmin(): boolean {
     return (this.auth.role ?? '').toUpperCase() === 'ADMIN';
   }

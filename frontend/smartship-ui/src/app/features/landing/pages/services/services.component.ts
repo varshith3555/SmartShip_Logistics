@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LandingNavbarComponent } from '../../components/navbar/landing-navbar.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 type ServiceTab = {
   id: 'b2c' | 'b2b' | 'international' | '3pl';
@@ -27,13 +28,14 @@ type ServiceTab = {
 })
 export class ServicesComponent {
   activeServiceId: ServiceTab['id'] = 'b2c';
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly serviceTabs: ServiceTab[] = [
     {
       id: 'b2c',
       title: 'B2C Logistics',
       icon: 'smartphone',
-      imageSrc: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80',
+      imageSrc: '/assets/images/b2c-delivery.png',
       fallbackImageSrc: '/assets/images/service-b2c.svg',
       imageAlt: 'Mobile tracking and last-mile delivery experience',
       description:
@@ -75,7 +77,7 @@ export class ServicesComponent {
       id: 'international',
       title: 'International Logistics',
       icon: 'language',
-      imageSrc: 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=800&q=80',
+      imageSrc: '/assets/images/international-cargo.png',
       fallbackImageSrc: '/assets/images/service-international.svg',
       imageAlt: 'Global routes and cross-border logistics network',
       description:
@@ -96,7 +98,7 @@ export class ServicesComponent {
       id: '3pl',
       title: '3rd Party Logistics (3PL)',
       icon: 'dashboard',
-      imageSrc: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+      imageSrc: '/assets/images/3pl-hub.png',
       fallbackImageSrc: '/assets/images/service-3pl.svg',
       imageAlt: 'Supply chain dashboard and automation platform',
       description:
@@ -115,7 +117,15 @@ export class ServicesComponent {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {
+    this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(fragment => {
+      const id = this.parseServiceId(fragment);
+      if (id) this.activeServiceId = id;
+    });
+  }
 
   get activeService(): ServiceTab {
     return this.serviceTabs.find(tab => tab.id === this.activeServiceId) ?? this.serviceTabs[0];
@@ -123,6 +133,22 @@ export class ServicesComponent {
 
   setActiveService(id: ServiceTab['id']): void {
     this.activeServiceId = id;
+
+    // Keep URL in sync for deep-links (e.g. /services#b2c).
+    this.router.navigate([], {
+      fragment: id,
+      replaceUrl: true,
+      queryParamsHandling: 'preserve',
+    });
+  }
+
+  private parseServiceId(fragment: string | null): ServiceTab['id'] | null {
+    if (!fragment) return null;
+    const normalized = fragment.trim().toLowerCase();
+    if (normalized === 'b2c' || normalized === 'b2b' || normalized === 'international' || normalized === '3pl') {
+      return normalized as ServiceTab['id'];
+    }
+    return null;
   }
 
   onDetailImageError(event: Event): void {

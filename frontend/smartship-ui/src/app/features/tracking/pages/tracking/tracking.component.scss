@@ -1,0 +1,185 @@
+      .sss-page {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .sss-title {
+        margin: 0 0 4px;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      .sss-sub {
+        margin: 0 0 18px;
+        color: var(--ss-text-muted);
+      }
+      .track-form {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .track-field {
+        flex: 1 1 320px;
+      }
+      .field-prefix {
+        margin-right: 8px;
+        display: inline-flex;
+        color: rgba(15, 23, 42, 0.45);
+      }
+      .result {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid var(--ss-border);
+      }
+      .result-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+      .muted {
+        font-size: 12px;
+        color: var(--ss-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .status-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      }
+      .timeline {
+        margin-top: 18px;
+      }
+      .timeline-title {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+      }
+      .timeline-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .timeline-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 14px;
+        position: relative;
+        padding: 10px 0;
+      }
+      .timeline-marker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .timeline-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: var(--ss-surface-secondary);
+        color: var(--ss-text-muted);
+        border: 1px solid var(--ss-border);
+      }
+      .timeline-icon mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+      .timeline-line {
+        flex: 1;
+        width: 2px;
+        background: linear-gradient(to bottom, var(--ss-border), transparent);
+        margin-top: 4px;
+      }
+      .timeline-body {
+        padding-top: 2px;
+      }
+      .timeline-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 2px;
+      }
+      .timeline-label {
+        font-weight: 600;
+        font-size: 0.98rem;
+      }
+      .timeline-tag {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #1d4ed8;
+        font-weight: 600;
+      }
+      .timeline-tag--done {
+        background: rgba(34, 197, 94, 0.12);
+        color: #15803d;
+      }
+      .timeline-caption {
+        margin: 0 0 4px;
+        font-size: 0.9rem;
+        color: var(--ss-text-muted);
+      }
+      .timeline-caption--current {
+        color: var(--ss-text);
+      }
+      .timeline-caption--done {
+        color: var(--ss-text-muted);
+      }
+      .timeline-caption--upcoming {
+        font-style: italic;
+      }
+      .timeline-meta {
+        font-size: 0.82rem;
+        color: var(--ss-text-muted);
+      }
+      .timeline-meta-main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .meta-when {
+        font-weight: 500;
+      }
+      .meta-where {
+        opacity: 0.9;
+      }
+      .meta-remarks {
+        margin: 2px 0 0;
+      }
+      .timeline-item.done .timeline-icon {
+        background: var(--ss-primary);
+        border-color: var(--ss-primary);
+        color: #fff;
+      }
+      .timeline-item.current .timeline-icon {
+        background: var(--ss-primary-dark);
+        border-color: var(--ss-primary-dark);
+        color: #fff;
+        box-shadow: var(--ss-shadow);
+      }
+      .timeline-item.upcoming .timeline-icon {
+        opacity: 0.7;
+      }
+      @media (max-width: 800px) {
+        .track-form {
+          flex-direction: column;
+        }
+        .track-form button {
+          width: 100%;
+        }
+        .timeline-item {
+          gap: 10px;
+        }
+      }

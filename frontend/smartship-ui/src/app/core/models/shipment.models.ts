@@ -24,14 +24,6 @@ export interface PickupDetails {
   pickupStatus?: string;
 }
 
-export interface Payment {
-  paymentId?: string;
-  shipmentId?: string;
-  amount: number;
-  paymentStatus?: string;
-  paymentDate?: string | null;
-}
-
 export interface Shipment {
   shipmentId: string;
   trackingNumber: string;
@@ -47,7 +39,6 @@ export interface Shipment {
   receiverAddress: Address;
   items: ShipmentItem[];
   pickupDetails?: PickupDetails | null;
-  payment?: Payment | null;
 }
 
 export interface AddressDto {
@@ -74,6 +65,7 @@ export interface CreateShipmentRequest {
 
 export interface UpdateShipmentStatusRequest {
   status: string;
+  hubId?: string;
 }
 
 export interface SchedulePickupRequest {

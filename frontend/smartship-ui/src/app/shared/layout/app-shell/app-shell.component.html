@@ -7,8 +7,7 @@
     [fixedInViewport]="true"
   >
     <div class="shell__brand">
-      <span class="shell__logo" aria-hidden="true">SS</span>
-      <span class="shell__brand-text" *ngIf="!collapsed">SmartShip</span>
+      <img src="assets/images/smartship-logo.png" alt="SmartShip Logo" class="shell__logo-image" [class.collapsed]="collapsed">
     </div>
 
     <mat-nav-list class="shell__nav">
@@ -124,13 +123,25 @@
         {{ r | uppercase }}
       </span>
 
+      <span class="shell__email" *ngIf="email" aria-label="Logged in email">
+        {{ email }}
+      </span>
+
       <button mat-icon-button type="button" [matMenuTriggerFor]="userMenu" aria-label="Account menu">
         <mat-icon>account_circle</mat-icon>
       </button>
       <mat-menu #userMenu="matMenu" xPosition="before">
         <div class="shell__menu-header" mat-menu-item disabled>
-          <mat-icon class="shell__menu-header-icon">badge</mat-icon>
-          <span>{{ role || 'User' }}</span>
+          <mat-icon class="shell__menu-header-icon">mail</mat-icon>
+          <span class="shell__menu-header-text">
+            @if (displayName) {
+              {{ displayName }}
+            } @else if (email) {
+              {{ email }}
+            } @else {
+              Account
+            }
+          </span>
         </div>
         <mat-divider></mat-divider>
         <button mat-menu-item type="button" (click)="onLogout()">

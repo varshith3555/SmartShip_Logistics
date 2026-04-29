@@ -1,0 +1,125 @@
+    <div class="sss-page">
+      <div class="head">
+        <div>
+          <h1 class="sss-title">Reports</h1>
+          <p class="sss-sub">Performance snapshots — last 7 days.</p>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <mat-card class="kpi">
+          <mat-card-content>
+            <div class="kpi-label">On-time delivery</div>
+            <div class="kpi-value">94.2%</div>
+            <div class="kpi-trend kpi-trend--up">
+              <mat-icon>trending_up</mat-icon>
+              +1.4% vs last week
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="kpi">
+          <mat-card-content>
+            <div class="kpi-label">Avg. transit time</div>
+            <div class="kpi-value">2.6d</div>
+            <div class="kpi-trend">
+              <mat-icon>schedule</mat-icon>
+              Stable
+            </div>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="kpi">
+          <mat-card-content>
+            <div class="kpi-label">First-attempt success</div>
+            <div class="kpi-value">88%</div>
+            <div class="kpi-trend kpi-trend--down">
+              <mat-icon>trending_down</mat-icon>
+              -0.6% vs last week
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="grid-2">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Shipment volume</mat-card-title>
+            <mat-card-subtitle>Last 7 days</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="bars" aria-label="Bar chart">
+              <div class="bar" *ngFor="let b of barSeries" [style.height.%]="b">
+                <span class="bar-tip"></span>
+              </div>
+            </div>
+            <div class="xaxis">
+              <span *ngFor="let d of days">{{ d }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>SLA trend</mat-card-title>
+            <mat-card-subtitle>On-time %</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <svg class="line-svg" viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" aria-label="Line chart">
+              <defs>
+                <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="rgba(21,101,192,0.35)" />
+                  <stop offset="100%" stop-color="rgba(21,101,192,0.0)" />
+                </linearGradient>
+              </defs>
+              <path [attr.d]="areaPath" fill="url(#g)" />
+              <path [attr.d]="linePath" fill="none" stroke="#1565c0" stroke-width="3" stroke-linecap="round" />
+              <g *ngFor="let p of linePoints; let i = index">
+                <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" fill="#1565c0" />
+              </g>
+            </svg>
+            <div class="xaxis">
+              <span *ngFor="let d of days">{{ d }}</span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <mat-card class="tbl-card" style="margin-top: 14px;">
+        <mat-card-header>
+          <mat-card-title>Reported issues</mat-card-title>
+          <mat-card-subtitle>From customer “Report Issue”</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="sk" *ngIf="!issuesLoaded">
+            <div class="sk-row" *ngFor="let _ of [1, 2, 3]">
+              <div class="sk-cell sk--md"></div>
+              <div class="sk-cell sk--md"></div>
+              <div class="sk-cell sk--lg"></div>
+              <div class="sk-cell sk--xs"></div>
+            </div>
+          </div>
+
+          <table class="tbl" *ngIf="issuesLoaded && issues.length">
+            <thead>
+              <tr>
+                <th>Shipment</th>
+                <th>Created</th>
+                <th>Description</th>
+                <th class="ar">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let e of issues">
+                <td><span class="mono">{{ e.shipmentId }}</span></td>
+                <td>{{ e.createdAt | date : 'medium' }}</td>
+                <td>{{ e.description }}</td>
+                <td class="ar">
+                  <button mat-stroked-button color="primary" type="button" (click)="resolveIssue(e)">Resolve</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="empty" *ngIf="issuesLoaded && !issues.length">No reported issues.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>

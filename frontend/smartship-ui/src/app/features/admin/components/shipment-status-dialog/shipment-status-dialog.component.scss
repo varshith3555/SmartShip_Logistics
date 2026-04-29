@@ -1,0 +1,31 @@
+      .full {
+        width: 100%;
+      }
+      .hub {
+        margin-top: 10px;
+      }
+      .hub-meta {
+        margin-top: 6px;
+        padding: 10px 12px;
+        border: 1px solid var(--ss-border);
+        border-radius: 12px;
+        background: var(--ss-surface-secondary);
+      }
+      .hub-meta-line {
+        font-weight: 600;
+      }
+      .hub-meta-sub {
+        color: var(--ss-text-muted);
+        font-size: 0.85rem;
+        margin-top: 2px;
+      }
+      .delay {
+        margin-top: 10px;
+      }
+      .hint {
+        margin: 0 0 12px;
+        color: var(--ss-text-muted);
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      }

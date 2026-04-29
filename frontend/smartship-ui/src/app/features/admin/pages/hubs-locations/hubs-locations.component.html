@@ -1,0 +1,96 @@
+    <div class="dash-page">
+      <!-- ── Page Header ─────────────────────────────────────────────── -->
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Logistics Network</p>
+          <h1 class="page-title">Hubs & Locations</h1>
+          <p class="page-sub">Manage sorting centers and their mapped service locations.</p>
+        </div>
+        <div class="header-actions">
+          <div class="search-box">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input type="text" placeholder="Search hubs..." class="search-input" [(ngModel)]="searchQuery" />
+          </div>
+          <button class="primary-btn" type="button" (click)="openHub('create', null)">
+            <mat-icon>add</mat-icon>
+            Add hub
+          </button>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <!-- ── Hubs Column ───────────────────────────────────────────── -->
+        <div class="col">
+          <div class="section-header">
+            <h2 class="section-title">Sorting Hubs</h2>
+            <span class="section-badge" *ngIf="hubsLoaded">{{ filteredHubs.length }} total</span>
+          </div>
+
+          <div class="card-list">
+            <div class="sk-wrap" *ngIf="!hubsLoaded">
+              <div class="sk-card" *ngFor="let _ of [1,2,3,4]"></div>
+            </div>
+
+            <div class="data-row" *ngFor="let h of filteredHubs">
+              <div class="row-icon row-icon--orange">
+                <mat-icon>domain</mat-icon>
+              </div>
+              <div class="row-info">
+                <div class="row-title">{{ h.hubName }}</div>
+                <div class="row-sub">{{ formatLocation(h) }}</div>
+              </div>
+              <div class="row-meta">
+                <span class="pill-badge">Capacity: {{ h.capacity }}</span>
+              </div>
+              <div class="row-actions">
+                <button class="icon-btn icon-btn--edit" matTooltip="Edit" (click)="openHub('edit', h)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="icon-btn icon-btn--delete" matTooltip="Delete" (click)="deleteHub(h)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="empty-state" *ngIf="hubsLoaded && !filteredHubs.length">
+              <mat-icon>domain_disabled</mat-icon>
+              <p>No hubs found matching your criteria.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Locations Column ──────────────────────────────────────── -->
+        <div class="col">
+          <div class="section-header">
+            <h2 class="section-title">Service Locations</h2>
+            <span class="section-badge" *ngIf="locsLoaded">{{ locations.length }} total</span>
+          </div>
+
+          <div class="card-list">
+            <div class="sk-wrap" *ngIf="!locsLoaded">
+              <div class="sk-card" *ngFor="let _ of [1,2,3,4,5]"></div>
+            </div>
+
+            <div class="data-row" *ngFor="let l of locations">
+              <div class="row-icon row-icon--blue">
+                <mat-icon>place</mat-icon>
+              </div>
+              <div class="row-info">
+                <div class="row-title">{{ l.city }}, {{ l.state }}</div>
+                <div class="row-sub">{{ l.country }} &bull; {{ l.pincode }}</div>
+              </div>
+              <div class="row-actions">
+                <button class="icon-btn icon-btn--delete" matTooltip="Delete" (click)="deleteLocation(l)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="empty-state" *ngIf="locsLoaded && !locations.length">
+              <mat-icon>location_off</mat-icon>
+              <p>No service locations configured.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

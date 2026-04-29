@@ -75,7 +75,7 @@ export class ChatWidgetComponent implements AfterViewChecked {
     {
       id: 3,
       question: 'Contact support',
-      answer: 'Our support team is available 24/7! Email us at support@smartship.com, call +1 (555) 123-4567, or visit our Contact page. We typically respond within 2 hours during business hours.',
+      answer: 'Our support team is available 24/7! Email us at varshith1220@gmail.com, call 7893837321, or visit our Contact page. We typically respond within 2 hours during business hours.',
       icon: 'support_agent'
     },
     {

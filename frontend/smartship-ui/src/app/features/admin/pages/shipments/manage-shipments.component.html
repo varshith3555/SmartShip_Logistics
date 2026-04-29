@@ -1,0 +1,105 @@
+    <div class="sss-page">
+      <h1 class="sss-title">Manage shipments</h1>
+      <p class="sss-sub">Review all shipments, filter by status, and take action.</p>
+
+      <mat-card class="toolbar-card">
+        <mat-card-content class="toolbar">
+          <mat-form-field appearance="outline" class="filter">
+            <mat-label>Status</mat-label>
+            <mat-select [value]="statusFilter" (selectionChange)="onFilterChange($event.value)">
+              <mat-option value="ALL">All</mat-option>
+              <mat-option value="DRAFT">Draft</mat-option>
+              <mat-option value="BOOKED">Booked</mat-option>
+              <mat-option value="PICKED UP">Picked up</mat-option>
+              <mat-option value="IN TRANSIT">In transit</mat-option>
+              <mat-option value="OUT FOR DELIVERY">Out for delivery</mat-option>
+              <mat-option value="DELIVERED">Delivered</mat-option>
+              <mat-option value="DELAYED">Delayed</mat-option>
+              <mat-option value="FAILED">Failed</mat-option>
+              <mat-option value="RETURNED">Returned</mat-option>
+              <mat-option value="CANCELLED">Cancelled</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="search">
+            <mat-label>Search by Tracking ID</mat-label>
+            <mat-icon matPrefix>search</mat-icon>
+            <input matInput [value]="trackingQuery" (input)="onTrackingQueryChange(($any($event.target).value || '').toString())" />
+          </mat-form-field>
+
+          <span class="count">{{ filtered.length }} shown</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-content class="wrap">
+          <div class="sk" *ngIf="!loaded">
+            <div class="sk-row" *ngFor="let _ of [1, 2, 3, 4, 5]">
+              <div class="sk-cell sk-cell--lg"></div>
+              <div class="sk-cell sk-cell--md"></div>
+              <div class="sk-cell sk-cell--sm"></div>
+              <div class="sk-cell sk-cell--md"></div>
+              <div class="sk-cell sk-cell--xs"></div>
+            </div>
+          </div>
+
+          <table mat-table [dataSource]="paged" class="tbl" *ngIf="loaded">
+            <ng-container matColumnDef="shipmentId">
+              <th mat-header-cell *matHeaderCellDef>Shipment ID</th>
+              <td mat-cell *matCellDef="let s">
+                <span class="mono">{{ s.shipmentId }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="trackingNumber">
+              <th mat-header-cell *matHeaderCellDef>Tracking #</th>
+              <td mat-cell *matCellDef="let s">
+                <span class="mono">{{ s.trackingNumber }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let s">
+                <app-status-badge [status]="s.status" />
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Created</th>
+              <td mat-cell *matCellDef="let s">{{ s.createdAt | date : 'medium' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+              <td mat-cell *matCellDef="let s" class="col-actions">
+                <a mat-stroked-button [routerLink]="['/shipments', s.shipmentId]">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </a>
+                <button mat-flat-button color="primary" type="button" (click)="openUpdate(s)">
+                  <mat-icon>edit</mat-icon>
+                  Update
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" class="row"></tr>
+          </table>
+
+          <p class="empty" *ngIf="loaded && !filtered.length">No shipments match this filter.</p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-paginator
+        *ngIf="loaded && filtered.length"
+        class="pager"
+        [length]="filtered.length"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPage($event)"
+        aria-label="Manage shipments pagination"
+      />
+    </div>

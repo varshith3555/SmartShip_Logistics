@@ -1,0 +1,39 @@
+      .page { max-width: 900px; margin: 0 auto; }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ss-text-muted);
+      }
+      .title {
+        margin: 4px 0 6px;
+        font-size: 1.6rem;
+        font-weight: 750;
+        letter-spacing: -0.03em;
+      }
+      .sub { color: var(--ss-text-muted); }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      }
+      .form { display: grid; gap: 14px; }
+      .field { display: grid; gap: 6px; }
+      .label { font-weight: 650; color: var(--ss-text); }
+      .input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--ss-border);
+        background: #fff;
+      }
+      .hint { color: var(--ss-text-muted); font-size: 0.92rem; }
+      .error { color: #b91c1c; font-size: 0.92rem; }
+      .actions { display: flex; justify-content: flex-end; }

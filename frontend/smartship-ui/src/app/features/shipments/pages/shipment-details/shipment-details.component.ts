@@ -3,249 +3,158 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { ShipmentService } from '../../../../core/services/shipment.service';
 import { Shipment } from '../../../../core/models/shipment.models';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { TrackingService } from '../../../../core/services/tracking.service';
+import { TrackingHistoryDto } from '../../../../core/models/tracking.models';
+import { DocumentService } from '../../../../core/services/document.service';
+import { DeliveryProof } from '../../../../core/models/document.models';
+import { SupportService } from '../../../../core/services/support.service';
 
 @Component({
   selector: 'app-shipment-details',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatDividerModule, MatIconModule, StatusBadgeComponent],
-  template: `
-    <div class="sss-page" *ngIf="shipment as s">
-      <div class="hero">
-        <div>
-          <div class="eyebrow">Shipment</div>
-          <h1 class="title">Details</h1>
-          <p class="sub">
-            <span class="mono">{{ s.trackingNumber }}</span>
-          </p>
-        </div>
-        <app-status-badge [status]="s.status" />
-      </div>
-
-      <div class="grid">
-        <mat-card>
-          <mat-card-header>
-            <div mat-card-avatar class="avatar">
-              <mat-icon>badge</mat-icon>
-            </div>
-            <mat-card-title>Summary</mat-card-title>
-            <mat-card-subtitle>Identifiers and pricing</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="kv">
-              <div class="k">Shipment ID</div>
-              <div class="v mono">{{ s.shipmentId }}</div>
-            </div>
-            <mat-divider />
-            <div class="kv">
-              <div class="k">Hub</div>
-              <div class="v mono">{{ s.hubId }}</div>
-            </div>
-            <mat-divider />
-            <div class="kv">
-              <div class="k">Total weight</div>
-              <div class="v">{{ s.totalWeight }} kg</div>
-            </div>
-            <mat-divider />
-            <div class="kv">
-              <div class="k">Price</div>
-              <div class="v">{{ s.price | number : '1.2-2' }}</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header>
-            <div mat-card-avatar class="avatar avatar--muted">
-              <mat-icon>person_pin_circle</mat-icon>
-            </div>
-            <mat-card-title>Sender</mat-card-title>
-            <mat-card-subtitle>Pickup details</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="addr">
-              <div class="strong">{{ s.senderAddress.name }}</div>
-              <div class="muted">{{ s.senderAddress.phone }}</div>
-              <div class="line">{{ s.senderAddress.street }}</div>
-              <div class="line">{{ s.senderAddress.city }}, {{ s.senderAddress.state }} — {{ s.senderAddress.pincode }}</div>
-              <div class="line">{{ s.senderAddress.country }}</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-header>
-            <div mat-card-avatar class="avatar avatar--muted">
-              <mat-icon>place</mat-icon>
-            </div>
-            <mat-card-title>Receiver</mat-card-title>
-            <mat-card-subtitle>Delivery details</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="addr">
-              <div class="strong">{{ s.receiverAddress.name }}</div>
-              <div class="muted">{{ s.receiverAddress.phone }}</div>
-              <div class="line">{{ s.receiverAddress.street }}</div>
-              <div class="line">{{ s.receiverAddress.city }}, {{ s.receiverAddress.state }} — {{ s.receiverAddress.pincode }}</div>
-              <div class="line">{{ s.receiverAddress.country }}</div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="wide">
-          <mat-card-header>
-            <div mat-card-avatar class="avatar">
-              <mat-icon>inventory</mat-icon>
-            </div>
-            <mat-card-title>Items</mat-card-title>
-            <mat-card-subtitle>Packages in this shipment</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="items">
-              <div class="item" *ngFor="let it of s.items">
-                <div class="item-name">{{ it.itemName }}</div>
-                <div class="item-meta">
-                  <span>Qty: {{ it.quantity }}</span>
-                  <span>Weight: {{ it.weight }} kg</span>
-                </div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .sss-page {
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-      .hero {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-      }
-      .eyebrow {
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--ss-text-muted);
-      }
-      .title {
-        margin: 4px 0 6px;
-        font-size: 1.6rem;
-        font-weight: 750;
-        letter-spacing: -0.03em;
-      }
-      .sub {
-        margin: 0;
-        color: var(--ss-text-muted);
-      }
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-      }
-      .wide {
-        grid-column: 1 / -1;
-      }
-      @media (max-width: 900px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-        .wide {
-          grid-column: auto;
-        }
-      }
-      .avatar {
-        background: var(--ss-primary-light);
-        color: var(--ss-primary);
-        display: grid;
-        place-items: center;
-      }
-      .avatar mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
-      }
-      .avatar--muted {
-        background: rgba(100, 116, 139, 0.12);
-        color: #334155;
-      }
-      .kv {
-        display: grid;
-        grid-template-columns: 160px 1fr;
-        gap: 12px;
-        padding: 10px 0;
-        align-items: baseline;
-      }
-      .k {
-        color: var(--ss-text-muted);
-        font-size: 0.92rem;
-      }
-      .v {
-        font-weight: 650;
-      }
-      .addr {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .strong {
-        font-weight: 750;
-      }
-      .muted {
-        color: var(--ss-text-muted);
-      }
-      .line {
-        color: var(--ss-text);
-      }
-      .items {
-        display: grid;
-        gap: 10px;
-      }
-      .item {
-        border: 1px solid var(--ss-border);
-        border-radius: 12px;
-        padding: 12px;
-        background: rgba(248, 250, 252, 0.8);
-      }
-      .item-name {
-        font-weight: 700;
-      }
-      .item-meta {
-        margin-top: 6px;
-        display: flex;
-        gap: 14px;
-        color: var(--ss-text-muted);
-        font-size: 0.92rem;
-      }
-    `,
-  ],
+  imports: [CommonModule, MatCardModule, MatDividerModule, MatIconModule, MatButtonModule, StatusBadgeComponent],
+  templateUrl: './shipment-details.component.html',
+  styleUrls: ['./shipment-details.component.scss'],
 })
 export class ShipmentDetailsComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(ShipmentService);
+  private readonly auth = inject(AuthService);
+  private readonly notify = inject(NotificationService);
+  private readonly tracking = inject(TrackingService);
+  private readonly documents = inject(DocumentService);
+  private readonly support = inject(SupportService);
 
   shipment: Shipment | null = null;
+  booking = false;
+  reporting = false;
+  timeline: TrackingHistoryDto[] = [];
+  deliveryProof: DeliveryProof | null = null;
+  deliveryProofUnavailable = false;
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.api.getShipmentById(id).subscribe({
-        next: (s) => (this.shipment = s),
+        next: (s) => {
+          this.shipment = s;
+          this.loadTimeline(s.trackingNumber);
+          this.loadDeliveryProofIfDelivered(s);
+        },
       });
     }
+  }
+
+  private loadDeliveryProofIfDelivered(s: Shipment): void {
+    const status = String(s.status || '').toUpperCase().trim();
+    if (status !== 'DELIVERED') {
+      this.deliveryProof = null;
+      this.deliveryProofUnavailable = false;
+      return;
+    }
+
+    this.documents.getDeliveryProof(s.shipmentId).subscribe({
+      next: (proof) => {
+        this.deliveryProof = proof;
+        this.deliveryProofUnavailable = false;
+      },
+      error: () => {
+        this.deliveryProof = null;
+        this.deliveryProofUnavailable = true;
+      },
+    });
+  }
+
+  private loadTimeline(trackingNumber: string): void {
+    if (!trackingNumber) {
+      this.timeline = [];
+      return;
+    }
+
+    this.tracking.getTimeline(trackingNumber).subscribe({
+      next: (events) => {
+        // Show newest first
+        this.timeline = [...(events ?? [])].sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
+      },
+      error: () => {
+        this.timeline = [];
+      },
+    });
+  }
+
+  canBook(status: string | null | undefined): boolean {
+    const role = (this.auth.role || '').toUpperCase();
+    const normalized = String(status || '').toUpperCase().trim();
+    return role === 'CUSTOMER' && normalized === 'DRAFT';
+  }
+
+  canSchedulePickup(s: Shipment): boolean {
+    const role = (this.auth.role || '').toUpperCase();
+    const status = String(s.status || '').toUpperCase().trim();
+    if (role !== 'CUSTOMER') return false;
+    if (status === 'DRAFT') return false;
+    if (status === 'DELIVERED' || status === 'CANCELLED' || status === 'FAILED' || status === 'RETURNED') return false;
+    return status === 'BOOKED' || !!s.pickupDetails;
+  }
+
+  canReportIssue(): boolean {
+    const role = (this.auth.role || '').toUpperCase();
+    return role === 'CUSTOMER' && !!this.shipment;
+  }
+
+  goToPickup(): void {
+    if (!this.shipment) return;
+    void this.router.navigate(['/shipments', this.shipment.shipmentId, 'pickup']);
+  }
+
+  onBook(): void {
+    if (!this.shipment || this.booking) return;
+    this.booking = true;
+
+    this.api.bookShipment(this.shipment.shipmentId).subscribe({
+      next: () => {
+        this.notify.success('Shipment booked successfully!');
+        this.api.getShipmentById(this.shipment!.shipmentId).subscribe({
+          next: (s) => (this.shipment = s),
+          complete: () => (this.booking = false),
+        });
+      },
+      error: () => {
+        this.notify.error('Failed to book shipment. Please try again.');
+        this.booking = false;
+      },
+    });
+  }
+
+  onReportIssue(): void {
+    if (!this.shipment || this.reporting) return;
+
+    const message = window.prompt('Describe the issue (optional):') ?? undefined;
+    if (message === undefined) return; // user cancelled
+
+    this.reporting = true;
+    this.support
+      .reportIssue({
+        shipmentId: this.shipment.shipmentId,
+        message: (message ?? '').trim(),
+      })
+      .subscribe({
+        next: () => {
+          this.notify.success('Issue reported. Our team will review it.');
+          this.reporting = false;
+        },
+        error: () => {
+          this.notify.error('Failed to report issue. Please try again.');
+          this.reporting = false;
+        },
+      });
   }
 }

@@ -17,6 +17,7 @@ import { decodeJwtPayload, getJwtRole, getJwtUserId } from '../utils/jwt.utils';
 
 const ACCESS_TOKEN_KEY = 'smartship.accessToken';
 const REFRESH_TOKEN_KEY = 'smartship.refreshToken';
+const USER_NAME_KEY = 'smartship.userName';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -56,10 +57,30 @@ export class AuthService {
     if (!auth) return null;
     
     const payload = decodeJwtPayload(auth.token);
+
+    const email = String(
+      payload?.['email'] ??
+        payload?.['upn'] ??
+        payload?.['preferred_username'] ??
+        payload?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
+        '',
+    ).trim();
+
+    const nameFromPayload = String(
+      payload?.['name'] ??
+        payload?.['given_name'] ??
+        payload?.['unique_name'] ??
+        payload?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ??
+        '',
+    ).trim();
+
+    const nameFromStorage = String(sessionStorage.getItem(USER_NAME_KEY) ?? '').trim();
+    const name = String(auth.name ?? '').trim() || nameFromStorage || nameFromPayload;
+
     return {
       userId: auth.userId,
-      name: auth.name,
-      email: payload?.['email'] || '',
+      name,
+      email,
       role: auth.role
     };
   }
@@ -115,6 +136,7 @@ export class AuthService {
   logout(): void {
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(USER_NAME_KEY);
     this._auth$.next(null);
   }
 
@@ -143,6 +165,7 @@ export class AuthService {
   private persistAuth(res: AuthResponse): void {
     sessionStorage.setItem(ACCESS_TOKEN_KEY, res.token);
     sessionStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
+    sessionStorage.setItem(USER_NAME_KEY, String(res.name ?? ''));
     this._auth$.next(res);
   }
 
@@ -159,7 +182,7 @@ export class AuthService {
       token,
       refreshToken,
       userId: userId ?? '',
-      name: '',
+      name: String(sessionStorage.getItem(USER_NAME_KEY) ?? ''),
       role,
     };
   }

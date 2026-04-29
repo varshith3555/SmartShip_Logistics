@@ -12,6 +12,7 @@ import {
   ReturnShipmentRequest,
   ShipmentException,
 } from '../models/admin.models';
+import { Shipment } from '../models/shipment.models';
 import { ApiClient } from './api-client.service';
 
 @Injectable({ providedIn: 'root' })
@@ -41,8 +42,24 @@ export class AdminService {
     };
   }
 
+  private normalizeShipment(s: Shipment): Shipment {
+    return {
+      ...s,
+      createdAt: this.normalizeIsoAsUtc(s.createdAt),
+    };
+  }
+
   dashboard(): Observable<{ totalHubs: number; openExceptions: number }> {
     return this.api.get<{ totalHubs: number; openExceptions: number }>('/gateway/admin/dashboard');
+  }
+
+  // SHIPMENTS (ADMIN monitoring)
+  getShipments(): Observable<Shipment[]> {
+    return this.api.get<Shipment[]>('/gateway/admin/shipments').pipe(map((s) => (s ?? []).map((x) => this.normalizeShipment(x))));
+  }
+
+  getShipmentById(id: string): Observable<Shipment> {
+    return this.api.get<Shipment>(`/gateway/admin/shipments/${encodeURIComponent(id)}`).pipe(map((s) => this.normalizeShipment(s)));
   }
 
   statistics(): Observable<{ revenue: number; shipmentsHandled: number; activeUsers: number }> {

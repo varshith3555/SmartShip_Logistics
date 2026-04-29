@@ -1,0 +1,70 @@
+    <div class="sss-page">
+      <h1 class="sss-title">Tracking</h1>
+      <p class="sss-sub">Enter a tracking number to see live status and journey history.</p>
+
+      <mat-card class="track-card">
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onTrack()" class="track-form">
+            <mat-form-field appearance="outline" class="track-field">
+              <mat-label>Tracking number</mat-label>
+              <span matPrefix class="field-prefix"><mat-icon>confirmation_number</mat-icon></span>
+              <input matInput formControlName="trackingNumber" />
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
+              <mat-icon *ngIf="!loading">search</mat-icon>
+              {{ loading ? 'Tracking…' : 'Track' }}
+            </button>
+          </form>
+
+          <div class="result" *ngIf="tracking">
+            <div class="result-head">
+              <div>
+                <div class="muted">Current status</div>
+                <div class="status-line">
+                  <app-status-badge [status]="status ?? tracking.currentStatus" />
+                </div>
+              </div>
+              <div class="meta" *ngIf="tracking.trackingNumber">
+                <div class="muted">Tracking #</div>
+                <div class="mono">{{ tracking.trackingNumber }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline" *ngIf="journeyTimeline.length">
+            <h2 class="timeline-title">Shipment journey</h2>
+            <ol class="timeline-list">
+              <li
+                *ngFor="let step of journeyTimeline; let last = last"
+                class="timeline-item"
+                [ngClass]="step.state"
+              >
+                <div class="timeline-marker">
+                  <div class="timeline-icon">
+                    <mat-icon>{{ step.icon }}</mat-icon>
+                  </div>
+                  <div class="timeline-line" *ngIf="!last"></div>
+                </div>
+                <div class="timeline-body">
+                  <div class="timeline-header">
+                    <span class="timeline-label">{{ step.label }}</span>
+                    <span class="timeline-tag" *ngIf="step.state === 'current'">Current</span>
+                    <span class="timeline-tag timeline-tag--done" *ngIf="step.state === 'done'">Completed</span>
+                  </div>
+                  <p class="timeline-caption" [ngClass]="'timeline-caption--' + step.state">
+                    {{ step.caption }}
+                  </p>
+                  <div class="timeline-meta" *ngIf="step.event">
+                    <div class="timeline-meta-main">
+                      <span class="meta-when">{{ step.event.timestamp | date : 'short' }}</span>
+                      <span class="meta-where" *ngIf="step.event.location">{{ step.event.location }}</span>
+                    </div>
+                    <p class="meta-remarks" *ngIf="step.event.remarks">{{ step.event.remarks }}</p>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>

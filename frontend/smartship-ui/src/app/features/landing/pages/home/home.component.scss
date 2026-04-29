@@ -132,10 +132,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(1.3);
@@ -146,15 +149,29 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
-.pin-1 { animation-delay: 0s; }
-.pin-2 { animation-delay: 0.5s; }
-.pin-3 { animation-delay: 1s; }
-.pin-4 { animation-delay: 1.5s; }
+.pin-1 {
+  animation-delay: 0s;
+}
+
+.pin-2 {
+  animation-delay: 0.5s;
+}
+
+.pin-3 {
+  animation-delay: 1s;
+}
+
+.pin-4 {
+  animation-delay: 1.5s;
+}
 
 @keyframes moveTruck {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   50% {
     transform: translateX(20px);
   }
@@ -170,9 +187,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -182,8 +202,13 @@
   animation: float 3s ease-in-out infinite;
 }
 
-.package-1 { animation-delay: 0s; }
-.package-2 { animation-delay: 1s; }
+.package-1 {
+  animation-delay: 0s;
+}
+
+.package-2 {
+  animation-delay: 1s;
+}
 
 // Floating Badges
 .floating-badge {
@@ -328,7 +353,7 @@
       transform: scale(1.1);
       box-shadow: 0 8px 24px rgba(243, 156, 18, 0.4);
       background: linear-gradient(135deg, var(--ss-primary) 0%, var(--ss-primary-dark) 100%);
-      
+
       mat-icon {
         color: white;
       }
@@ -410,7 +435,7 @@
   padding: 100px 24px;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -469,7 +494,7 @@
   align-items: center;
   gap: 12px;
   border-radius: 16px !important;
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(255, 152, 0, 0.25),
     0 4px 8px rgba(0, 0, 0, 0.1) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -477,7 +502,7 @@
 
   &:hover {
     transform: translateY(-4px) scale(1.05);
-    box-shadow: 
+    box-shadow:
       0 16px 40px rgba(255, 152, 0, 0.35),
       0 8px 16px rgba(0, 0, 0, 0.15) !important;
   }

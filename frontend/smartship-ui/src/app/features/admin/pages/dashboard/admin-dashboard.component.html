@@ -1,0 +1,509 @@
+    <div class="dash-page">
+
+      <!-- ── Page Header ─────────────────────────────────────────────── -->
+      <div class="page-header">
+        <div>
+          <p class="page-eyebrow">Overview</p>
+          <h1 class="page-title">Operations Dashboard</h1>
+          <p class="page-sub">Monitor throughput, exceptions, and network health at a glance.</p>
+        </div>
+        <div class="header-actions">
+          <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span>Live data</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── KPI Cards ───────────────────────────────────────────────── -->
+      <div class="kpi-grid" *ngIf="shipmentsLoaded">
+        <!-- Total Shipments -->
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon kpi-icon--orange">
+              <mat-icon>inventory_2</mat-icon>
+            </div>
+            <span class="kpi-trend kpi-trend--up">
+              <mat-icon>arrow_upward</mat-icon>12%
+            </span>
+          </div>
+          <div class="kpi-value">{{ stats.total | number }}</div>
+          <div class="kpi-label">Total Shipments</div>
+          <div class="kpi-footer">vs. last month</div>
+        </div>
+
+        <!-- Delivered -->
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon kpi-icon--green">
+              <mat-icon>task_alt</mat-icon>
+            </div>
+            <span class="kpi-trend kpi-trend--up">
+              <mat-icon>arrow_upward</mat-icon>8%
+            </span>
+          </div>
+          <div class="kpi-value">{{ stats.delivered | number }}</div>
+          <div class="kpi-label">Delivered</div>
+          <div class="kpi-footer">Successfully completed</div>
+        </div>
+
+        <!-- In Transit -->
+        <div class="kpi-card">  
+          <div class="kpi-top">
+            <div class="kpi-icon kpi-icon--blue">
+              <mat-icon>local_shipping</mat-icon>
+            </div>
+            <span class="kpi-trend kpi-trend--neutral">
+              <mat-icon>remove</mat-icon>2%
+            </span>
+          </div>
+          <div class="kpi-value">{{ stats.inTransit | number }}</div>
+          <div class="kpi-label">In Transit</div>
+          <div class="kpi-footer">Currently en route</div>
+        </div>
+
+        <!-- Delayed -->
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <div class="kpi-icon kpi-icon--amber">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <span class="kpi-trend kpi-trend--down">
+              <mat-icon>arrow_downward</mat-icon>5%
+            </span>
+          </div>
+          <div class="kpi-value kpi-value--warn">{{ stats.delayed | number }}</div>
+          <div class="kpi-label">Delayed</div>
+          <div class="kpi-footer">Requires attention</div>
+        </div>
+      </div>
+
+      <!-- Skeleton KPIs -->
+      <div class="kpi-grid" *ngIf="!shipmentsLoaded">
+        <div class="kpi-card kpi-skeleton" *ngFor="let _ of [1,2,3,4]"></div>
+      </div>
+
+      <!-- ── Tracking Timeline (Insight strip) ───────────────────────── -->
+      <div class="timeline-strip">
+        <div class="timeline-step timeline-step--done">
+          <div class="tl-icon"><mat-icon>inventory_2</mat-icon></div>
+          <div class="tl-line"></div>
+          <div class="tl-label">Picked Up</div>
+        </div>
+        <div class="timeline-step timeline-step--done">
+          <div class="tl-icon"><mat-icon>warehouse</mat-icon></div>
+          <div class="tl-line"></div>
+          <div class="tl-label">At Hub</div>
+        </div>
+        <div class="timeline-step timeline-step--active">
+          <div class="tl-icon"><mat-icon>local_shipping</mat-icon></div>
+          <div class="tl-line"></div>
+          <div class="tl-label">In Transit</div>
+        </div>
+        <div class="timeline-step">
+          <div class="tl-icon"><mat-icon>store</mat-icon></div>
+          <div class="tl-line"></div>
+          <div class="tl-label">Out for Delivery</div>
+        </div>
+        <div class="timeline-step">
+          <div class="tl-icon"><mat-icon>check_circle</mat-icon></div>
+          <div class="tl-line tl-line--none"></div>
+          <div class="tl-label">Delivered</div>
+        </div>
+      </div>
+
+      <!-- ── Shipment Volume: 2-col (Chart 70% + Insights 30%) ────────── -->
+      <div class="vol-layout">
+
+        <!-- LEFT: Stacked Bar Chart -->
+        <div class="vol-chart-card">
+          <div class="vol-header">
+            <div>
+              <div class="vol-title">Shipment Volume <span class="vol-period">— Last 7 Days</span></div>
+              <div class="vol-sub">Stacked daily breakdown: Delivered + Delayed</div>
+            </div>
+            <div class="vol-legend">
+              <span class="vl-item"><span class="vl-dot vl-dot--green"></span>Delivered</span>
+              <span class="vl-item"><span class="vl-dot vl-dot--amber"></span>Delayed</span>
+            </div>
+          </div>
+
+          <!-- Tooltip (shown on hover via JS) -->
+          <div class="bar-tooltip" id="barTooltip" style="display:none">
+            <div class="bt-day" id="btDay"></div>
+            <div class="bt-row"><span class="bt-dot bt-dot--green"></span><span id="btDelivered"></span> delivered</div>
+            <div class="bt-row"><span class="bt-dot bt-dot--amber"></span><span id="btDelayed"></span> delayed</div>
+          </div>
+
+          <div class="vol-chart-body">
+            <!-- Pure SVG stacked bar chart -->
+            <svg id="volChart" viewBox="0 0 520 200" class="vol-svg" (mouseleave)="hideBarTooltip()">
+
+              <!-- Y-axis grid lines & ticks -->
+              <!-- baseline=160, top=10, range=150, max=50 → each unit = 3px -->
+              <line x1="40" y1="10"  x2="520" y2="10"  stroke="#f3f4f6" stroke-width="1"/>
+              <line x1="40" y1="60"  x2="520" y2="60"  stroke="#f3f4f6" stroke-width="1"/>
+              <line x1="40" y1="110" x2="520" y2="110" stroke="#f3f4f6" stroke-width="1"/>
+              <line x1="40" y1="160" x2="520" y2="160" stroke="#f3f4f6" stroke-width="1"/>
+
+              <!-- Y-axis labels -->
+              <text x="34" y="14"  class="vc-tick" text-anchor="end">50</text>
+              <text x="34" y="64"  class="vc-tick" text-anchor="end">33</text>
+              <text x="34" y="114" class="vc-tick" text-anchor="end">17</text>
+              <text x="34" y="164" class="vc-tick" text-anchor="end">0</text>
+
+              <!-- ── Day 1: Mon  delivered=32 delayed=5 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Mon',32,5)">
+                <rect class="bar bar--delayed bar-ani" x="54"  y="115" width="36" height="15" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="54"  y="19"  width="36" height="96" rx="4" ry="4" style="animation-delay:0.05s"/>
+              </g>
+              <text x="72"  y="178" class="vc-label" text-anchor="middle">Mon</text>
+
+              <!-- Day 2: Tue  delivered=28 delayed=8 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Tue',28,8)">
+                <rect class="bar bar--delayed bar-ani" x="122" y="112" width="36" height="24" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="122" y="28"  width="36" height="84" rx="4" ry="4" style="animation-delay:0.10s"/>
+              </g>
+              <text x="140" y="178" class="vc-label" text-anchor="middle">Tue</text>
+
+              <!-- Day 3: Wed  delivered=41 delayed=4 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Wed',41,4)">
+                <rect class="bar bar--delayed bar-ani" x="190" y="117" width="36" height="12" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="190" y="5"   width="36" height="112" rx="4" ry="4" style="animation-delay:0.15s"/>
+              </g>
+              <text x="208" y="178" class="vc-label" text-anchor="middle">Wed</text>
+
+              <!-- Day 4: Thu  delivered=36 delayed=9 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Thu',36,9)">
+                <rect class="bar bar--delayed bar-ani" x="258" y="133" width="36" height="27" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="258" y="25"  width="36" height="108" rx="4" ry="4" style="animation-delay:0.20s"/>
+              </g>
+              <text x="276" y="178" class="vc-label" text-anchor="middle">Thu</text>
+
+              <!-- Day 5: Fri  delivered=47 delayed=3 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Fri',47,3)">
+                <rect class="bar bar--delayed bar-ani" x="326" y="151" width="36" height="9"  rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="326" y="10"  width="36" height="141" rx="4" ry="4" style="animation-delay:0.25s"/>
+              </g>
+              <text x="344" y="178" class="vc-label" text-anchor="middle">Fri</text>
+
+              <!-- Day 6: Sat  delivered=22 delayed=11 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Sat',22,11)">
+                <rect class="bar bar--delayed bar-ani" x="394" y="127" width="36" height="33" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="394" y="61"  width="36" height="66" rx="4" ry="4" style="animation-delay:0.30s"/>
+              </g>
+              <text x="412" y="178" class="vc-label" text-anchor="middle">Sat</text>
+
+              <!-- Day 7: Sun  delivered=39 delayed=6 -->
+              <g class="bar-group" (mouseenter)="showBarTooltip($event,'Sun',39,6)">
+                <rect class="bar bar--delayed bar-ani" x="462" y="113" width="36" height="18" rx="0" ry="0"/>
+                <rect class="bar bar--delivered bar-ani" x="462" y="13"  width="36" height="100" rx="4" ry="4" style="animation-delay:0.35s"/>
+              </g>
+              <text x="480" y="178" class="vc-label" text-anchor="middle">Sun</text>
+
+            </svg>
+          </div>
+        </div>
+
+        <!-- RIGHT: Weekly Insights Card -->
+        <div class="insights-card">
+          <div class="ins-header">
+            <div class="ins-icon"><mat-icon>insights</mat-icon></div>
+            <div>
+              <div class="ins-title">Weekly Insights</div>
+              <div class="ins-period">Mon – Sun, this week</div>
+            </div>
+          </div>
+
+          <div class="ins-divider"></div>
+
+          <div class="ins-stat">
+            <div class="ins-stat-icon ins-stat-icon--blue"><mat-icon>local_shipping</mat-icon></div>
+            <div class="ins-stat-body">
+              <div class="ins-stat-value">245</div>
+              <div class="ins-stat-label">Total shipments</div>
+            </div>
+          </div>
+
+          <div class="ins-stat ins-stat--sla">
+            <div class="ins-stat-icon ins-stat-icon--green"><mat-icon>verified</mat-icon></div>
+            <div class="ins-stat-body">
+              <div class="ins-stat-value ins-stat-value--green">87<span class="ins-pct">%</span></div>
+              <div class="ins-stat-label">On-time delivery (SLA)</div>
+            </div>
+            <div class="ins-sla-bar">
+              <div class="ins-sla-fill" style="width:87%"></div>
+            </div>
+          </div>
+
+          <div class="ins-stat">
+            <div class="ins-stat-icon ins-stat-icon--amber"><mat-icon>schedule</mat-icon></div>
+            <div class="ins-stat-body">
+              <div class="ins-stat-value ins-stat-value--amber">Sat</div>
+              <div class="ins-stat-label">Most delayed day</div>
+            </div>
+          </div>
+
+          <div class="ins-divider"></div>
+
+          <div class="ins-stat">
+            <div class="ins-stat-icon ins-stat-icon--red"><mat-icon>warning_amber</mat-icon></div>
+            <div class="ins-stat-body">
+              <div class="ins-stat-value ins-stat-value--red">36</div>
+              <div class="ins-stat-label">Total delayed this week</div>
+            </div>
+          </div>
+
+          <div class="ins-footer">
+            <a class="ins-link" routerLink="/admin/reports">
+              Full report <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Needs Attention ─────────────────────────────────────────── -->
+      <div class="section-header">
+        <h2 class="section-title">Needs Attention</h2>
+        <span class="section-badge" *ngIf="exceptions.length">{{ exceptions.length }} open</span>
+      </div>
+
+      <div class="attention-grid">
+        <!-- Open Exceptions -->
+        <div class="data-card">
+          <div class="data-card-header">
+            <div class="data-card-title-wrap">
+              <div class="data-card-icon data-card-icon--danger">
+                <mat-icon>error_outline</mat-icon>
+              </div>
+              <div>
+                <div class="data-card-title">Open Exceptions</div>
+                <div class="data-card-sub">Latest items awaiting action</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sk-wrap" *ngIf="!exceptionsLoaded">
+            <div class="sk-row" *ngFor="let _ of [1,2,3]">
+              <div class="sk-cell sk--md"></div>
+              <div class="sk-cell sk--lg"></div>
+              <div class="sk-cell sk--sm"></div>
+            </div>
+          </div>
+
+          <div class="table-wrap" *ngIf="exceptionsLoaded && exceptions.length">
+            <table mat-table [dataSource]="exceptions" class="dash-table">
+              <ng-container matColumnDef="shipmentId">
+                <th mat-header-cell *matHeaderCellDef>Shipment</th>
+                <td mat-cell *matCellDef="let e">
+                  <a class="mono-link" [routerLink]="['/shipments', e.shipmentId]">{{ e.shipmentId }}</a>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let e"><span class="type-tag">{{ e.type }}</span></td>
+              </ng-container>
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created</th>
+                <td mat-cell *matCellDef="let e" class="muted-cell">{{ e.createdAt | date:'mediumDate' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="col-right"></th>
+                <td mat-cell *matCellDef="let e" class="col-right">
+                  <button class="ghost-btn ghost-btn--primary"
+                    type="button"
+                    (click)="resolve(e)"
+                    [disabled]="isResolved(e) || isResolving(e)">
+                    <mat-icon>check</mat-icon>
+                    Resolve
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="exceptionCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: exceptionCols" class="dash-row"></tr>
+            </table>
+          </div>
+
+          <div class="empty-state" *ngIf="exceptionsLoaded && !exceptions.length">
+            <mat-icon>check_circle_outline</mat-icon>
+            <p>No open exceptions found</p>
+          </div>
+
+          <div class="card-footer" *ngIf="exceptionsLoaded && exceptions.length">
+            <a class="footer-link" routerLink="/admin/exceptions">
+              View all exceptions <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
+
+        <!-- Delayed Shipments -->
+        <div class="data-card">
+          <div class="data-card-header">
+            <div class="data-card-title-wrap">
+              <div class="data-card-icon data-card-icon--amber">
+                <mat-icon>schedule</mat-icon>
+              </div>
+              <div>
+                <div class="data-card-title">Delayed Shipments</div>
+                <div class="data-card-sub">Most recent delays</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sk-wrap" *ngIf="!shipmentsLoaded">
+            <div class="sk-row" *ngFor="let _ of [1,2,3]">
+              <div class="sk-cell sk--lg"></div>
+              <div class="sk-cell sk--sm"></div>
+              <div class="sk-cell sk--md"></div>
+            </div>
+          </div>
+
+          <div class="table-wrap" *ngIf="shipmentsLoaded && delayed.length">
+            <table mat-table [dataSource]="delayed" class="dash-table">
+              <ng-container matColumnDef="trackingNumber">
+                <th mat-header-cell *matHeaderCellDef>Tracking #</th>
+                <td mat-cell *matCellDef="let s"><span class="mono">{{ s.trackingNumber }}</span></td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let s"><app-status-badge [status]="s.status" /></td>
+              </ng-container>
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created</th>
+                <td mat-cell *matCellDef="let s" class="muted-cell">{{ s.createdAt | date:'mediumDate' }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="delayedCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: delayedCols" class="dash-row"></tr>
+            </table>
+          </div>
+
+          <div class="empty-state" *ngIf="shipmentsLoaded && !delayed.length">
+            <mat-icon>local_shipping</mat-icon>
+            <p>No delayed shipments right now</p>
+          </div>
+
+          <div class="card-footer" *ngIf="shipmentsLoaded && delayed.length">
+            <a class="footer-link" routerLink="/admin/shipments">
+              Manage shipments <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Quick Links ─────────────────────────────────────────────── -->
+      <div class="section-header">
+        <h2 class="section-title">Quick Links</h2>
+      </div>
+
+      <div class="quicklink-grid">
+        <a class="ql-card" routerLink="/admin/shipments">
+          <div class="ql-icon ql-icon--orange"><mat-icon>assignment</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Manage Shipments</div>
+            <div class="ql-desc">Search, filter, and update shipment status.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+
+        <a class="ql-card" routerLink="/admin/hubs-locations">
+          <div class="ql-icon ql-icon--blue"><mat-icon>hub</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Hubs &amp; Locations</div>
+            <div class="ql-desc">Configure hubs and serviceable locations.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+
+        <a class="ql-card" routerLink="/admin/reports">
+          <div class="ql-icon ql-icon--green"><mat-icon>insights</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Reports</div>
+            <div class="ql-desc">Performance, SLA, and revenue snapshots.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+
+        <a class="ql-card" routerLink="/admin/users">
+          <div class="ql-icon ql-icon--purple"><mat-icon>group</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Users</div>
+            <div class="ql-desc">Browse user accounts and roles.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+
+        <a class="ql-card" routerLink="/admin/exceptions">
+          <div class="ql-icon ql-icon--red"><mat-icon>error_outline</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Exceptions</div>
+            <div class="ql-desc">Review open exceptions awaiting action.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+
+        <a class="ql-card" routerLink="/admin/documents">
+          <div class="ql-icon ql-icon--teal"><mat-icon>description</mat-icon></div>
+          <div class="ql-body">
+            <div class="ql-title">Documents</div>
+            <div class="ql-desc">Upload and fetch shipment documents.</div>
+          </div>
+          <mat-icon class="ql-chev">chevron_right</mat-icon>
+        </a>
+      </div>
+
+      <!-- ── Recent Shipments ────────────────────────────────────────── -->
+      <div class="section-header">
+        <h2 class="section-title">Recent Shipments</h2>
+      </div>
+
+      <div class="data-card data-card--full">
+        <div class="sk-wrap" *ngIf="!shipmentsLoaded">
+          <div class="sk-row sk-row--5" *ngFor="let _ of [1,2,3,4,5]">
+            <div class="sk-cell sk--md"></div>
+            <div class="sk-cell sk--lg"></div>
+            <div class="sk-cell sk--sm"></div>
+            <div class="sk-cell sk--md"></div>
+            <div class="sk-cell sk--sm" style="justify-self:end"></div>
+          </div>
+        </div>
+
+        <div class="table-wrap" *ngIf="shipmentsLoaded && recent.length">
+          <table mat-table [dataSource]="recent" class="dash-table">
+            <ng-container matColumnDef="shipmentId">
+              <th mat-header-cell *matHeaderCellDef>Shipment ID</th>
+              <td mat-cell *matCellDef="let s"><span class="mono">{{ s.shipmentId }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="trackingNumber">
+              <th mat-header-cell *matHeaderCellDef>Tracking #</th>
+              <td mat-cell *matCellDef="let s"><span class="mono">{{ s.trackingNumber }}</span></td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let s"><app-status-badge [status]="s.status" /></td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef>Created</th>
+              <td mat-cell *matCellDef="let s" class="muted-cell">{{ s.createdAt | date:'medium' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="col-right"></th>
+              <td mat-cell *matCellDef="let s" class="col-right">
+                <a class="ghost-btn ghost-btn--secondary" [routerLink]="['/shipments', s.shipmentId]">
+                  <mat-icon>visibility</mat-icon>
+                  View
+                </a>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="recentCols"></tr>
+            <tr mat-row *matRowDef="let row; columns: recentCols" class="dash-row"></tr>
+          </table>
+        </div>
+
+        <div class="empty-state" *ngIf="shipmentsLoaded && !recent.length">
+          <mat-icon>inbox</mat-icon>
+          <p>No shipments found</p>
+        </div>
+      </div>
+
+    </div>

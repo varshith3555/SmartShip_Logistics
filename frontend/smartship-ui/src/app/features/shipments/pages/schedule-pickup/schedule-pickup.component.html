@@ -1,0 +1,38 @@
+    <div class="page" *ngIf="shipment as s">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Pickup</div>
+          <h1 class="title">Schedule Pickup</h1>
+          <div class="sub">Shipment: <span class="mono">{{ s.trackingNumber }}</span></div>
+        </div>
+        <button mat-stroked-button type="button" (click)="goBack()">Back</button>
+      </div>
+
+      <mat-card>
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+            <div class="field">
+              <label for="scheduledDate" class="label">Pickup date & time</label>
+              <input
+                id="scheduledDate"
+                class="input"
+                type="datetime-local"
+                formControlName="scheduledDate"
+              />
+              <div class="hint" *ngIf="s.pickupDetails?.scheduledDate">
+                Current: <span class="mono">{{ s.pickupDetails?.scheduledDate }}</span>
+              </div>
+              <div class="error" *ngIf="form.controls.scheduledDate.touched && form.controls.scheduledDate.invalid">
+                Pickup date & time is required
+              </div>
+            </div>
+
+            <div class="actions">
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || submitting">
+                {{ submitting ? 'Saving…' : (s.pickupDetails ? 'Reschedule' : 'Schedule') }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>

@@ -1,0 +1,120 @@
+    <div class="sss-page">
+      <h1 class="sss-title">Documents</h1>
+      <p class="sss-sub">Load documents for a shipment, then upload new files securely.</p>
+
+      <mat-card class="panel">
+        <mat-card-content>
+          <form [formGroup]="form" (ngSubmit)="onLoad()" class="load-row">
+            <mat-form-field appearance="outline" class="grow">
+              <mat-label>Shipment Id</mat-label>
+              <mat-select formControlName="shipmentId" [disabled]="shipmentsBusy">
+                <mat-option *ngIf="shipmentsBusy" [disabled]="true" value="">Loading shipments…</mat-option>
+                <mat-option *ngIf="!shipmentsBusy && !shipmentIds.length" [disabled]="true" value="">No shipments found</mat-option>
+                <mat-option *ngFor="let id of shipmentIds" [value]="id">{{ id }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || busy">
+              <mat-icon>folder_open</mat-icon>
+              Load
+            </button>
+          </form>
+
+          <div class="upload-block">
+            <div
+              class="dropzone"
+              [class.dropzone--active]="dragOver"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)"
+              (drop)="onDrop($event)"
+              (click)="fileInput.click()"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="fileInput.click()"
+            >
+              <mat-icon class="drop-ico">cloud_upload</mat-icon>
+              <div class="drop-title">Drag &amp; drop files here</div>
+              <div class="drop-hint">or click to browse — PDF, images, labels</div>
+              <input #fileInput class="visually-hidden" type="file" accept=".pdf,image/png,image/jpeg" (change)="onFileSelected($event)" />
+            </div>
+
+            <div class="upload-controls">
+              <mat-form-field appearance="outline" class="grow">
+                <mat-label>Upload type</mat-label>
+                <mat-select [value]="uploadKind" (selectionChange)="uploadKind = $event.value">
+                  <mat-option value="generic">Generic</mat-option>
+                  <mat-option value="invoice">Invoice</mat-option>
+                  <mat-option value="label">Label</mat-option>
+                  <mat-option value="customs">Customs</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-stroked-button type="button" (click)="fileInput.click()">
+                <mat-icon>attach_file</mat-icon>
+                Choose file
+              </button>
+
+              <button mat-flat-button color="primary" type="button" (click)="onUpload()" [disabled]="!selectedFile || form.invalid || busy">
+                <mat-icon>upload</mat-icon>
+                Upload
+              </button>
+            </div>
+
+            <div class="file-pill" *ngIf="selectedFile">
+              <mat-icon>insert_drive_file</mat-icon>
+              <span>{{ selectedFile.name }}</span>
+              <button mat-icon-button type="button" (click)="clearFile($event)" aria-label="Clear file">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-card" *ngIf="documents.length">
+            <table mat-table [dataSource]="documents" class="doc-table">
+              <ng-container matColumnDef="fileName">
+                <th mat-header-cell *matHeaderCellDef>File name</th>
+                <td mat-cell *matCellDef="let d">
+                  <span class="file-cell">
+                    <mat-icon class="file-ico">description</mat-icon>
+                    {{ d.fileName }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="fileType">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let d">
+                  <span class="type-pill">{{ d.fileType }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="uploadedAt">
+                <th mat-header-cell *matHeaderCellDef>Uploaded date</th>
+                <td mat-cell *matCellDef="let d">{{ d.uploadedAt | date : 'short' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="url">
+                <th mat-header-cell *matHeaderCellDef>Download</th>
+                <td mat-cell *matCellDef="let d" class="actions">
+                  <a
+                    mat-stroked-button
+                    color="primary"
+                    [href]="d.fileUrl"
+                    target="_blank"
+                    rel="noopener"
+                    [attr.download]="d.fileName"
+                  >
+                    <mat-icon>download</mat-icon>
+                    Download
+                  </a>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </div>
+
+          <p class="empty" *ngIf="!documents.length && form.valid && loadedOnce">No documents found for this shipment.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ShipmentService } from '../../../../core/services/shipment.service';
 import { AdminService } from '../../../../core/services/admin.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { Hub } from '../../../../core/models/admin.models';
 
 export interface ShipmentStatusDialogData {
   shipmentId: string;
@@ -27,69 +28,25 @@ export interface ShipmentStatusDialogData {
     MatInputModule,
     MatButtonModule,
   ],
-  template: `
-    <h2 mat-dialog-title>Update status</h2>
-    <form mat-dialog-content [formGroup]="form" (ngSubmit)="save()">
-      <p class="hint">Shipment <span class="mono">{{ data.shipmentId }}</span></p>
-      <mat-form-field appearance="outline" class="full">
-        <mat-label>Status</mat-label>
-        <mat-select formControlName="status">
-          <mat-option *ngFor="let s of statuses" [value]="s.value" [disabled]="s.value === 'CREATED'">{{ s.label }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <div *ngIf="isDelayed" class="delay">
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Delayed by (hours)</mat-label>
-          <input matInput type="number" formControlName="delayedByHours" min="1" step="1" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Reason</mat-label>
-          <input matInput type="text" formControlName="reason" />
-        </mat-form-field>
-      </div>
-    </form>
-    <div mat-dialog-actions align="end">
-      <button mat-button type="button" (click)="ref.close()">Cancel</button>
-      <button
-        mat-flat-button
-        color="primary"
-        type="button"
-        (click)="save()"
-        [disabled]="form.invalid || saving || isUnchanged"
-      >
-        {{ saving ? 'Saving…' : 'Save' }}
-      </button>
-    </div>
-  `,
-  styles: [
-    `
-      .full {
-        width: 100%;
-      }
-      .delay {
-        margin-top: 10px;
-      }
-      .hint {
-        margin: 0 0 12px;
-        color: var(--ss-text-muted);
-      }
-      .mono {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      }
-    `,
-  ],
+  templateUrl: './shipment-status-dialog.component.html',
+  styleUrls: ['./shipment-status-dialog.component.scss'],
 })
 export class ShipmentStatusDialogComponent {
   readonly statuses: Array<{ value: string; label: string }> = [
+    { value: 'DRAFT', label: 'DRAFT' },
     { value: 'CREATED', label: 'CREATED' },
     { value: 'BOOKED', label: 'BOOKED' },
+    { value: 'PICKED_UP', label: 'PICKED UP' },
     { value: 'IN_TRANSIT', label: 'IN TRANSIT' },
     { value: 'OUT_FOR_DELIVERY', label: 'OUT FOR DELIVERY' },
     { value: 'DELIVERED', label: 'DELIVERED' },
     { value: 'DELAYED', label: 'DELAYED' },
     { value: 'CANCELLED', label: 'CANCELLED' },
   ];
+
+  private readonly hubRequired = new Set(['PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELAYED', 'DELIVERED']);
+
+  hubs: Hub[] = [];
 
   saving = false;
 
@@ -102,12 +59,24 @@ export class ShipmentStatusDialogComponent {
 
   readonly form = this.fb.nonNullable.group({
     status: ['', Validators.required],
+    hubId: [''],
     delayedByHours: [0],
     reason: [''],
   });
 
   constructor() {
     this.form.patchValue({ status: this.toBackendStatus(this.data.currentStatus || 'CREATED') });
+
+    this.admin.getHubs().subscribe({
+      next: (h) => (this.hubs = h ?? []),
+      error: () => (this.hubs = []),
+    });
+
+    this.form.controls.status.valueChanges.subscribe(() => {
+      this.syncHubValidators();
+    });
+
+    this.syncHubValidators();
 
     this.form.controls.status.valueChanges.subscribe((v) => {
       if (v === 'DELAYED') {
@@ -123,6 +92,19 @@ export class ShipmentStatusDialogComponent {
     });
   }
 
+  private syncHubValidators(): void {
+    const status = this.form.controls.status.value || '';
+
+    if (this.hubRequired.has(status)) {
+      this.form.controls.hubId.setValidators([Validators.required]);
+    } else {
+      this.form.controls.hubId.clearValidators();
+      this.form.controls.hubId.setValue('', { emitEvent: false });
+    }
+
+    this.form.controls.hubId.updateValueAndValidity({ emitEvent: false });
+  }
+
   private toBackendStatus(raw: string): string {
     return (raw || '')
       .trim()
@@ -135,6 +117,16 @@ export class ShipmentStatusDialogComponent {
     return this.form.controls.status.value === 'DELAYED';
   }
 
+  get requiresHub(): boolean {
+    return this.hubRequired.has(this.form.controls.status.value || '');
+  }
+
+  get selectedHub(): Hub | null {
+    const id = this.form.controls.hubId.value;
+    if (!id) return null;
+    return this.hubs.find((h) => h.hubId === id) ?? null;
+  }
+
   get isUnchanged(): boolean {
     return this.toBackendStatus(this.data.currentStatus || '') === (this.form.controls.status.value || '');
   }
@@ -143,8 +135,9 @@ export class ShipmentStatusDialogComponent {
     if (this.form.invalid || this.saving) return;
     this.saving = true;
 
-    const { status, delayedByHours, reason } = this.form.getRawValue();
+    const { status, hubId, delayedByHours, reason } = this.form.getRawValue();
     const statusValue = status ?? '';
+    const hubIdValue = hubId ? String(hubId) : undefined;
 
     const afterSuccess = (message: string) => {
       this.notify.success(message);
@@ -158,7 +151,7 @@ export class ShipmentStatusDialogComponent {
 
     // DELAYED is supported as a shipment status, and also creates an Admin exception.
     if (statusValue === 'DELAYED') {
-      this.shipments.updateStatus(this.data.shipmentId, { status: statusValue }).subscribe({
+      this.shipments.updateStatus(this.data.shipmentId, { status: statusValue, hubId: hubIdValue }).subscribe({
         next: () => {
           this.admin.delayShipment(this.data.shipmentId, { delayedByHours: Number(delayedByHours), reason: String(reason) }).subscribe({
             next: () => afterSuccess('Shipment delayed'),
@@ -176,7 +169,7 @@ export class ShipmentStatusDialogComponent {
       return;
     }
 
-    this.shipments.updateStatus(this.data.shipmentId, { status: statusValue }).subscribe({
+    this.shipments.updateStatus(this.data.shipmentId, { status: statusValue, hubId: hubIdValue }).subscribe({
       next: () => afterSuccess('Status updated'),
       error: () => afterError('Failed to update status'),
       complete: () => {

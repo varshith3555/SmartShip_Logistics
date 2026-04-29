@@ -1,0 +1,460 @@
+    <div class="wiz-page">
+      <div class="wiz-card">
+
+        <!-- ── Header ── -->
+        <div class="wiz-header">
+          <div class="wiz-header-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14M5 8a2 2 0 0 1 0-4h14a2 2 0 0 1 0 4M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/></svg>
+            New Shipment
+          </div>
+          <h1 class="wiz-title">Create a Shipment</h1>
+          <p class="wiz-subtitle">Complete each section to book and confirm your shipment.</p>
+        </div>
+
+        <!-- ── Custom Stepper ── -->
+        <div class="stepper">
+          <div class="stepper-track">
+            <div
+              class="stepper-line-fill"
+              [style.width.%]="stepperFillPercent"
+            ></div>
+          </div>
+
+          <div class="stepper-steps">
+            @for (step of steps; track step.id) {
+              <button
+                type="button"
+                class="stepper-step"
+                [class.is-done]="currentStep > step.id"
+                [class.is-active]="currentStep === step.id"
+                [class.is-upcoming]="currentStep < step.id"
+                (click)="goToStep(step.id)"
+                [disabled]="currentStep < step.id"
+                [attr.aria-label]="'Step ' + step.id + ': ' + step.label"
+              >
+                <div class="step-bubble">
+                  @if (currentStep > step.id) {
+                    <!-- Checkmark -->
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  } @else {
+                    <span class="step-num">{{ step.id }}</span>
+                  }
+                </div>
+                <div class="step-label-wrap">
+                  <span class="step-label">{{ step.label }}</span>
+                  <span class="step-sub">{{ step.sublabel }}</span>
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- ── Form Body ── -->
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Step 1: Sender -->
+          @if (currentStep === 1) {
+            <div class="step-body" @fadeSlide>
+              <div class="step-section-header">
+                <div class="ssh-icon ssh-icon--orange">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div>
+                  <h2 class="ssh-title">Sender Information</h2>
+                  <p class="ssh-desc">Who is sending this package? Enter pickup address &amp; contact.</p>
+                </div>
+              </div>
+
+              <div class="field-section" formGroupName="senderAddress">
+                <div class="section-block">
+                  <div class="section-block-label">Contact</div>
+                  <div class="grid-2">
+                    <div class="field-group">
+                      <label class="field-label" for="s-name">Full Name</label>
+                      <input id="s-name" type="text" class="field-input" formControlName="name" placeholder="Enter name" autocomplete="name" />
+                      @if (senderGroup.get('name')?.touched && senderGroup.get('name')?.hasError('required')) {
+                        <span class="field-error">Name is required</span>
+                      }
+                      <span class="field-hint">Contact person for pickup</span>
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="s-phone">Phone Number</label>
+                      <input id="s-phone" type="tel" class="field-input" formControlName="phone" placeholder="Enter phone number" autocomplete="tel" />
+                      @if (senderGroup.get('phone')?.touched && senderGroup.get('phone')?.hasError('required')) {
+                        <span class="field-error">Phone number is required</span>
+                      }
+                      @if (senderGroup.get('phone')?.touched && senderGroup.get('phone')?.hasError('phone10Digits')) {
+                        <span class="field-error">Phone number must be 10 digits</span>
+                      }
+                      <span class="field-hint">For pickup coordination</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-block">
+                  <div class="section-block-label">Address</div>
+                  <div class="grid-1">
+                    <div class="field-group">
+                      <label class="field-label" for="s-street">Street Address</label>
+                      <input id="s-street" type="text" class="field-input" formControlName="street" placeholder="123 Main Street, Apt 4B" autocomplete="street-address" />
+                      @if (senderGroup.get('street')?.touched && senderGroup.get('street')?.hasError('required')) {
+                        <span class="field-error">Street address is required</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="grid-2 mt-fields">
+                    <div class="field-group">
+                      <label class="field-label" for="s-city">City</label>
+                      <input id="s-city" type="text" class="field-input" formControlName="city" placeholder="Mumbai" autocomplete="address-level2" />
+                      @if (senderGroup.get('city')?.touched && senderGroup.get('city')?.hasError('required')) {
+                        <span class="field-error">City is required</span>
+                      }
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="s-state">State / Province</label>
+                      <input id="s-state" type="text" class="field-input" formControlName="state" placeholder="Maharashtra" autocomplete="address-level1" />
+                      @if (senderGroup.get('state')?.touched && senderGroup.get('state')?.hasError('required')) {
+                        <span class="field-error">State is required</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="grid-2 mt-fields">
+                    <div class="field-group">
+                      <label class="field-label" for="s-country">Country</label>
+                      <input id="s-country" type="text" class="field-input" formControlName="country" placeholder="India" autocomplete="country-name" />
+                      @if (senderGroup.get('country')?.touched && senderGroup.get('country')?.hasError('required')) {
+                        <span class="field-error">Country is required</span>
+                      }
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="s-pin">Postal Code</label>
+                      <input id="s-pin" type="text" class="field-input" formControlName="pincode" placeholder="400001" autocomplete="postal-code" />
+                      @if (senderGroup.get('pincode')?.touched && senderGroup.get('pincode')?.hasError('required')) {
+                        <span class="field-error">Postal code is required</span>
+                      }
+                      @if (senderGroup.get('pincode')?.touched && senderGroup.get('pincode')?.hasError('pincode6Digits')) {
+                        <span class="field-error">Postal code must be 6 digits</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <span></span>
+                <button type="button" class="btn-primary" (click)="nextStep()" id="sender-continue-btn">
+                  Continue
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Step 2: Receiver -->
+          @if (currentStep === 2) {
+            <div class="step-body" @fadeSlide>
+              <div class="step-section-header">
+                <div class="ssh-icon ssh-icon--blue">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div>
+                  <h2 class="ssh-title">Receiver Information</h2>
+                  <p class="ssh-desc">Where is this package going? Enter delivery address &amp; contact.</p>
+                </div>
+              </div>
+
+              <div class="field-section" formGroupName="receiverAddress">
+                <div class="section-block">
+                  <div class="section-block-label">Contact</div>
+                  <div class="grid-2">
+                    <div class="field-group">
+                      <label class="field-label" for="r-name">Full Name</label>
+                      <input id="r-name" type="text" class="field-input" formControlName="name" placeholder="Jane Smith" autocomplete="name" />
+                      @if (receiverGroup.get('name')?.touched && receiverGroup.get('name')?.hasError('required')) {
+                        <span class="field-error">Name is required</span>
+                      }
+                      <span class="field-hint">Contact person for delivery</span>
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="r-phone">Phone Number</label>
+                      <input id="r-phone" type="tel" class="field-input" formControlName="phone" placeholder="9876543210" autocomplete="tel" />
+                      @if (receiverGroup.get('phone')?.touched && receiverGroup.get('phone')?.hasError('required')) {
+                        <span class="field-error">Phone number is required</span>
+                      }
+                      @if (receiverGroup.get('phone')?.touched && receiverGroup.get('phone')?.hasError('phone10Digits')) {
+                        <span class="field-error">Phone number must be 10 digits</span>
+                      }
+                      <span class="field-hint">For delivery coordination</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-block">
+                  <div class="section-block-label">Address</div>
+                  <div class="grid-1">
+                    <div class="field-group">
+                      <label class="field-label" for="r-street">Street Address</label>
+                      <input id="r-street" type="text" class="field-input" formControlName="street" placeholder="456 Oak Avenue, Suite 200" autocomplete="street-address" />
+                      @if (receiverGroup.get('street')?.touched && receiverGroup.get('street')?.hasError('required')) {
+                        <span class="field-error">Street address is required</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="grid-2 mt-fields">
+                    <div class="field-group">
+                      <label class="field-label" for="r-city">City</label>
+                      <input id="r-city" type="text" class="field-input" formControlName="city" placeholder="Delhi" autocomplete="address-level2" />
+                      @if (receiverGroup.get('city')?.touched && receiverGroup.get('city')?.hasError('required')) {
+                        <span class="field-error">City is required</span>
+                      }
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="r-state">State / Province</label>
+                      <input id="r-state" type="text" class="field-input" formControlName="state" placeholder="Delhi" autocomplete="address-level1" />
+                      @if (receiverGroup.get('state')?.touched && receiverGroup.get('state')?.hasError('required')) {
+                        <span class="field-error">State is required</span>
+                      }
+                    </div>
+                  </div>
+                  <div class="grid-2 mt-fields">
+                    <div class="field-group">
+                      <label class="field-label" for="r-country">Country</label>
+                      <input id="r-country" type="text" class="field-input" formControlName="country" placeholder="India" autocomplete="country-name" />
+                      @if (receiverGroup.get('country')?.touched && receiverGroup.get('country')?.hasError('required')) {
+                        <span class="field-error">Country is required</span>
+                      }
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="r-pin">Postal Code</label>
+                      <input id="r-pin" type="text" class="field-input" formControlName="pincode" placeholder="110001" autocomplete="postal-code" />
+                      @if (receiverGroup.get('pincode')?.touched && receiverGroup.get('pincode')?.hasError('required')) {
+                        <span class="field-error">Postal code is required</span>
+                      }
+                      @if (receiverGroup.get('pincode')?.touched && receiverGroup.get('pincode')?.hasError('pincode6Digits')) {
+                        <span class="field-error">Postal code must be 6 digits</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button type="button" class="btn-ghost" (click)="prevStep()" id="receiver-back-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn-primary" (click)="nextStep()" id="receiver-continue-btn">
+                  Continue
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Step 3: Package -->
+          @if (currentStep === 3) {
+            <div class="step-body" @fadeSlide>
+              <div class="step-section-header">
+                <div class="ssh-icon ssh-icon--purple">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </div>
+                <div>
+                  <h2 class="ssh-title">Package Details</h2>
+                  <p class="ssh-desc">List all items included in this shipment.</p>
+                </div>
+              </div>
+
+              <div class="field-section">
+                <div formArrayName="items" class="items-list">
+                  @for (item of items.controls; track $index) {
+                    <div class="item-card" [formGroupName]="$index">
+                      <div class="item-card-header">
+                        <div class="item-pill">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                          Item {{ $index + 1 }}
+                        </div>
+                        @if (items.length > 1) {
+                          <button type="button" class="btn-remove" (click)="removeItem($index)" [attr.aria-label]="'Remove item ' + ($index + 1)" id="remove-item-{{ $index }}-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Remove
+                          </button>
+                        }
+                      </div>
+
+                      <div class="grid-1">
+                        <div class="field-group">
+                          <label class="field-label" [for]="'item-name-' + $index">Item Description</label>
+                          <input [id]="'item-name-' + $index" type="text" class="field-input" formControlName="itemName" placeholder="e.g., Electronics, Documents, Clothing" />
+                          @if (items.at($index).get('itemName')?.touched && items.at($index).get('itemName')?.hasError('required')) {
+                            <span class="field-error">Item description is required</span>
+                          }
+                        </div>
+                      </div>
+
+                      <div class="grid-2 mt-fields">
+                        <div class="field-group">
+                          <label class="field-label" [for]="'item-qty-' + $index">Quantity</label>
+                          <input [id]="'item-qty-' + $index" type="number" class="field-input" formControlName="quantity" min="1" placeholder="1" />
+                          @if (items.at($index).get('quantity')?.touched && items.at($index).get('quantity')?.hasError('required')) {
+                            <span class="field-error">Quantity is required</span>
+                          }
+                          @if (items.at($index).get('quantity')?.touched && items.at($index).get('quantity')?.hasError('min')) {
+                            <span class="field-error">Quantity must be at least 1</span>
+                          }
+                        </div>
+                        <div class="field-group">
+                          <label class="field-label" [for]="'item-weight-' + $index">Weight</label>
+                          <div class="input-addon-wrap">
+                            <input
+                              [id]="'item-weight-' + $index"
+                              type="number"
+                              class="field-input field-input--addon"
+                              formControlName="weight"
+                              step="0.01"
+                              min="0.01"
+                              placeholder="1.5"
+                            />
+                            <select class="field-addon-select" formControlName="weightUnit" [attr.aria-label]="'Weight unit for item ' + ($index + 1)">
+                              <option value="kg">kg</option>
+                              <option value="g">g</option>
+                            </select>
+                          </div>
+                          @if (items.at($index).get('weight')?.touched && items.at($index).get('weight')?.hasError('required')) {
+                            <span class="field-error">Weight is required</span>
+                          }
+                          @if (items.at($index).get('weight')?.touched && items.at($index).get('weight')?.hasError('min')) {
+                            <span class="field-error">Weight must be greater than 0</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <button type="button" class="btn-add-item" (click)="addItem()" id="add-item-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add Another Item
+                </button>
+              </div>
+
+              <div class="step-actions">
+                <button type="button" class="btn-ghost" (click)="prevStep()" id="package-back-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn-primary" (click)="nextStep()" id="package-review-btn">
+                  Review Order
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            </div>
+          }
+
+          <!-- Step 4: Review & Submit -->
+          @if (currentStep === 4) {
+            <div class="step-body" @fadeSlide>
+              <div class="step-section-header">
+                <div class="ssh-icon ssh-icon--green">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <div>
+                  <h2 class="ssh-title">Review &amp; Confirm</h2>
+                  <p class="ssh-desc">Double-check every detail before booking your shipment.</p>
+                </div>
+              </div>
+
+              <div class="review-grid">
+                <!-- Sender summary -->
+                <div class="review-card">
+                  <div class="review-card-hd">
+                    <div class="rc-icon rc-icon--orange">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <span class="rc-title">Sender</span>
+                    <button type="button" class="rc-edit" (click)="goToStep(1)" id="edit-sender-btn">Edit</button>
+                  </div>
+                  <div class="rc-body">
+                    <p class="rc-name">{{ form.value.senderAddress?.name }}</p>
+                    <p class="rc-text">{{ form.value.senderAddress?.phone }}</p>
+                    <p class="rc-text">
+                      {{ form.value.senderAddress?.street }},
+                      {{ form.value.senderAddress?.city }},
+                      {{ form.value.senderAddress?.state }} {{ form.value.senderAddress?.pincode }},
+                      {{ form.value.senderAddress?.country }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Receiver summary -->
+                <div class="review-card">
+                  <div class="review-card-hd">
+                    <div class="rc-icon rc-icon--blue">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <span class="rc-title">Receiver</span>
+                    <button type="button" class="rc-edit" (click)="goToStep(2)" id="edit-receiver-btn">Edit</button>
+                  </div>
+                  <div class="rc-body">
+                    <p class="rc-name">{{ form.value.receiverAddress?.name }}</p>
+                    <p class="rc-text">{{ form.value.receiverAddress?.phone }}</p>
+                    <p class="rc-text">
+                      {{ form.value.receiverAddress?.street }},
+                      {{ form.value.receiverAddress?.city }},
+                      {{ form.value.receiverAddress?.state }} {{ form.value.receiverAddress?.pincode }},
+                      {{ form.value.receiverAddress?.country }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Package items summary -->
+                <div class="review-card review-card--full">
+                  <div class="review-card-hd">
+                    <div class="rc-icon rc-icon--purple">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <span class="rc-title">Package Items ({{ form.value.items?.length }})</span>
+                    <button type="button" class="rc-edit" (click)="goToStep(3)" id="edit-items-btn">Edit</button>
+                  </div>
+                  <div class="rc-body">
+                    <div class="items-review-list">
+                      @for (item of form.value.items; track $index) {
+                        <div class="items-review-row">
+                          <div class="irr-left">
+                            <span class="irr-dot"></span>
+                            <span class="irr-name">{{ item?.itemName || 'Item ' + ($index + 1) }}</span>
+                          </div>
+                          <div class="irr-right">
+                            <span class="irr-badge">Qty: {{ item?.quantity }}</span>
+                            <span class="irr-badge">{{ item?.weight }} {{ item?.weightUnit }}</span>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <button type="button" class="btn-ghost" (click)="prevStep()" id="review-back-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  Back
+                </button>
+                <button type="button" class="btn-ghost" (click)="onSaveDraft()" [disabled]="form.invalid || submitting" id="create-shipment-save-draft-btn">
+                  Save Draft
+                </button>
+                <button type="submit" class="btn-primary btn-submit" [disabled]="form.invalid || submitting" id="create-shipment-submit-btn">
+                  @if (submitting) {
+                    <span class="spinner"></span>
+                    Creating…
+                  } @else {
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Confirm &amp; Book
+                  }
+                </button>
+              </div>
+            </div>
+          }
+
+        </form>
+      </div>
+    </div>

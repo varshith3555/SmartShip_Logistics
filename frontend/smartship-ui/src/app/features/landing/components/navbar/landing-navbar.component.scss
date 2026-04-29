@@ -5,6 +5,7 @@
   top: 0;
   z-index: 1000;
   border-bottom: 2px solid var(--ss-primary-light);
+  overflow: hidden;
 }
 
 .navbar-container {
@@ -28,18 +29,11 @@
     transform: scale(1.05);
   }
 
-  .brand-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    color: var(--ss-primary-dark);
-  }
-
-  .brand-name {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--ss-text);
-    letter-spacing: -0.5px;
+  .nav-logo {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+    margin: -15px 0;
   }
 }
 
@@ -162,7 +156,8 @@
     font-size: 14px;
   }
 
-  .brand-name {
-    font-size: 20px;
+  .nav-logo {
+    height: 75px;
+    margin: -10px 0;
   }
 }

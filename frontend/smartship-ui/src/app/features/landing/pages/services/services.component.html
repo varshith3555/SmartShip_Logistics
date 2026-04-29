@@ -15,18 +15,12 @@
   <!-- Services Content -->
   <section class="services-content">
     <div class="content-wrapper">
-      
+
       <!-- Service Tabs -->
       <div class="tabs-grid" role="tablist" aria-label="Services">
-        <button
-          *ngFor="let tab of serviceTabs"
-          type="button"
-          class="tab-card"
-          role="tab"
-          [attr.aria-selected]="activeServiceId === tab.id"
-          [class.active]="activeServiceId === tab.id"
-          (click)="setActiveService(tab.id)"
-        >
+        <button *ngFor="let tab of serviceTabs" type="button" class="tab-card" role="tab"
+          [attr.aria-selected]="activeServiceId === tab.id" [class.active]="activeServiceId === tab.id"
+          (click)="setActiveService(tab.id)">
           <div class="tab-icon-wrapper">
             <mat-icon>{{ tab.icon }}</mat-icon>
           </div>
@@ -42,16 +36,12 @@
       <!-- Service Detail Card -->
       <div class="service-detail-card">
         <div class="detail-grid">
-          
+
           <!-- Image Section -->
           <div class="detail-media">
             <div class="media-overlay"></div>
-            <img
-              [src]="activeService.imageSrc"
-              [alt]="activeService.imageAlt"
-              loading="lazy"
-              (error)="onDetailImageError($event)"
-            />
+            <img [src]="activeService.imageSrc" [alt]="activeService.imageAlt" loading="lazy"
+              (error)="onDetailImageError($event)" />
             <div class="media-badge">
               <mat-icon>{{ activeService.icon }}</mat-icon>
             </div>

@@ -1,0 +1,191 @@
+    <div class="sss-page" *ngIf="shipment as s">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Shipment</div>
+          <h1 class="title">Details</h1>
+          <p class="sub">
+            <span class="mono">{{ s.trackingNumber }}</span>
+          </p>
+        </div>
+        <div class="hero-actions">
+          <button
+            *ngIf="canBook(s.status)"
+            mat-flat-button
+            color="primary"
+            [disabled]="booking"
+            (click)="onBook()"
+            aria-label="Book shipment"
+          >
+            {{ booking ? 'Booking…' : 'Book Shipment' }}
+          </button>
+          <button
+            *ngIf="canReportIssue()"
+            mat-stroked-button
+            color="warn"
+            type="button"
+            [disabled]="reporting"
+            (click)="onReportIssue()"
+            aria-label="Report an issue"
+          >
+            {{ reporting ? 'Reporting…' : 'Report Issue' }}
+          </button>
+          <button
+            *ngIf="canSchedulePickup(s)"
+            mat-stroked-button
+            type="button"
+            (click)="goToPickup()"
+            aria-label="Schedule pickup"
+          >
+            {{ s.pickupDetails ? 'Reschedule Pickup' : 'Schedule Pickup' }}
+          </button>
+          <app-status-badge [status]="s.status" />
+        </div>
+      </div>
+
+      <div class="grid">
+        <mat-card>
+          <mat-card-header>
+            <div mat-card-avatar class="avatar">
+              <mat-icon>badge</mat-icon>
+            </div>
+            <mat-card-title>Summary</mat-card-title>
+            <mat-card-subtitle>Identifiers and pricing</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="kv">
+              <div class="k">Shipment ID</div>
+              <div class="v mono">{{ s.shipmentId }}</div>
+            </div>
+            <mat-divider />
+            <div class="kv">
+              <div class="k">Hub</div>
+              <div class="v mono">{{ s.hubId }}</div>
+            </div>
+            <mat-divider />
+            <div class="kv">
+              <div class="k">Total weight</div>
+              <div class="v">{{ s.totalWeight }} kg</div>
+            </div>
+            <mat-divider />
+            <div class="kv">
+              <div class="k">Price</div>
+              <div class="v">{{ s.price | number : '1.2-2' }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header>
+            <div mat-card-avatar class="avatar avatar--muted">
+              <mat-icon>person_pin_circle</mat-icon>
+            </div>
+            <mat-card-title>Sender</mat-card-title>
+            <mat-card-subtitle>Pickup details</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="addr">
+              <div class="strong">{{ s.senderAddress.name }}</div>
+              <div class="muted">{{ s.senderAddress.phone }}</div>
+              <div class="line">{{ s.senderAddress.street }}</div>
+              <div class="line">{{ s.senderAddress.city }}, {{ s.senderAddress.state }} — {{ s.senderAddress.pincode }}</div>
+              <div class="line">{{ s.senderAddress.country }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-header>
+            <div mat-card-avatar class="avatar avatar--muted">
+              <mat-icon>place</mat-icon>
+            </div>
+            <mat-card-title>Receiver</mat-card-title>
+            <mat-card-subtitle>Delivery details</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="addr">
+              <div class="strong">{{ s.receiverAddress.name }}</div>
+              <div class="muted">{{ s.receiverAddress.phone }}</div>
+              <div class="line">{{ s.receiverAddress.street }}</div>
+              <div class="line">{{ s.receiverAddress.city }}, {{ s.receiverAddress.state }} — {{ s.receiverAddress.pincode }}</div>
+              <div class="line">{{ s.receiverAddress.country }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="wide">
+          <mat-card-header>
+            <div mat-card-avatar class="avatar">
+              <mat-icon>inventory</mat-icon>
+            </div>
+            <mat-card-title>Items</mat-card-title>
+            <mat-card-subtitle>Packages in this shipment</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="items">
+              <div class="item" *ngFor="let it of s.items">
+                <div class="item-name">{{ it.itemName }}</div>
+                <div class="item-meta">
+                  <span>Qty: {{ it.quantity }}</span>
+                  <span>Weight: {{ it.weight }} kg</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="wide">
+          <mat-card-header>
+            <div mat-card-avatar class="avatar">
+              <mat-icon>timeline</mat-icon>
+            </div>
+            <mat-card-title>Tracking History</mat-card-title>
+            <mat-card-subtitle>Latest events for this shipment</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="timeline?.length; else noTimeline" class="timeline">
+              <div class="event" *ngFor="let e of timeline">
+                <div class="event-row">
+                  <div class="event-status">
+                    <app-status-badge [status]="e.status" />
+                  </div>
+                  <div class="event-meta">
+                    <div class="event-loc">{{ e.location }}</div>
+                    <div class="event-time mono">{{ e.timestamp }}</div>
+                  </div>
+                </div>
+                <div class="event-remarks" *ngIf="e.remarks">{{ e.remarks }}</div>
+              </div>
+            </div>
+            <ng-template #noTimeline>
+              <div class="muted">No tracking events yet.</div>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="wide" *ngIf="deliveryProof || deliveryProofUnavailable">
+          <mat-card-header>
+            <div mat-card-avatar class="avatar">
+              <mat-icon>verified</mat-icon>
+            </div>
+            <mat-card-title>Delivery Proof</mat-card-title>
+            <mat-card-subtitle>Confirmation details for delivered shipments</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="deliveryProof; else noProof" class="proof-grid">
+              <div class="proof-block">
+                <div class="proof-label">Photo</div>
+                <img class="proof-img" [src]="deliveryProof.imageUrl" alt="Delivery photo" />
+              </div>
+              <div class="proof-block">
+                <div class="proof-label">Signature</div>
+                <img class="proof-img" [src]="deliveryProof.signatureUrl" alt="Recipient signature" />
+              </div>
+              <div class="proof-meta muted">Delivered at: <span class="mono">{{ deliveryProof.deliveredAt }}</span></div>
+            </div>
+            <ng-template #noProof>
+              <div class="muted">Delivery proof is not available for this shipment.</div>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
