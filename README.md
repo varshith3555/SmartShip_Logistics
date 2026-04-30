@@ -26,7 +26,7 @@ The application follows a microservices architecture where each service is indep
 
 **Key Components:**
 - API Gateway (Ocelot) – routes all incoming requests  
-- Microservices – handle business logic (Shipment, Tracking, Admin, Identity, Document)  
+- Microservices – handle business logic (Shipment, Tracking, Admin, Identity)  
 - RabbitMQ – enables asynchronous communication  
 - Angular frontend – interacts with backend APIs  
 
@@ -35,7 +35,7 @@ The application follows a microservices architecture where each service is indep
 ## Tech Stack
 
 **Backend:** ASP.NET Core, C#, REST APIs  
-**Frontend:** Angular, TypeScript
+**Frontend:** Angular, TypeScript   
 **Database:** SQL Server  
 **Communication:** RabbitMQ, Ocelot API Gateway  
 
@@ -45,7 +45,7 @@ The application follows a microservices architecture where each service is indep
 
 ### Backend
 ```bash
-cd backend
+cd Backend
 # Open SmartShip.Logistics.sln in Visual Studio
 # Run API Gateway and required microservices
 ```
@@ -78,7 +78,7 @@ ng serve
 ## Project Structure
 
 ```bash
-backend/                         # .NET microservices + API Gateway (Ocelot)
+Backend/                         # .NET microservices + API Gateway (Ocelot)
   gateway/                       # API Gateway configuration
   services/
     SmartShip.AdminService/      # Admin service
